@@ -2,53 +2,52 @@ using System;
 
 namespace QuantityMeasurement.Domain.ValueObjects
 {
-    public sealed class Feet : IEquatable<Feet>
+    public sealed class Feet : IEquatable<Feet>, IComparable<Feet>
     {
-        public double Value { get; }
+        private readonly QuantityLength _quantity;
+
+        public double Value => _quantity.Value;
 
         public Feet(double value)
         {
-            Value = value;
+            _quantity = new QuantityLength(value, LengthUnit.Feet);
         }
 
-        // Strongly typed equality
         public bool Equals(Feet? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
 
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Value.CompareTo(other.Value) == 0;
+            return _quantity.Equals(other._quantity);
         }
 
-        // Override Object.Equals
         public override bool Equals(object? obj)
         {
-            if (obj is not Feet other)
-                return false;
-
-            return Equals(other);
+            return obj is Feet other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return _quantity.GetHashCode();
         }
 
-        public static bool operator ==(Feet? left, Feet? right)
+        public int CompareTo(Feet? other)
         {
-            if (ReferenceEquals(left, right))
-                return true;
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
 
-            if (left is null || right is null)
-                return false;
+            return _quantity.CompareTo(other._quantity);
+        }
+
+        public static bool operator ==(Feet left, Feet right)
+        {
+            if (left is null)
+                return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(Feet? left, Feet? right)
+        public static bool operator !=(Feet left, Feet right)
         {
             return !(left == right);
         }

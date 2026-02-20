@@ -27,5 +27,17 @@ namespace QuantityMeasurement.Domain.Services
 
             return first.Equals(second);
         }
+
+        // NEW METHOD FOR QUANTITY LENGTH
+        public bool AreEqual(QuantityLength first, QuantityLength second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            return first.Equals(second);
+        }
     }
 }
