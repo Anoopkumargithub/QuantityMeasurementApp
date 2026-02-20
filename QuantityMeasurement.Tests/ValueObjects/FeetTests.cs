@@ -7,63 +7,56 @@ namespace QuantityMeasurement.Tests.ValueObjects
     public class FeetTests
     {
         [TestMethod]
-        public void Equals_SameReference_ReturnsTrue()
-        {
-            var feet = new Feet(1.0);
-
-            var result = feet.Equals(feet);
-
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void Equals_SameValue_ReturnsTrue()
+        public void TestEquality_SameValue()
         {
             var first = new Feet(1.0);
             var second = new Feet(1.0);
 
             var result = first.Equals(second);
 
-            Assert.IsTrue(result);
+            Assert.IsTrue(result, "Expected 1.0 ft to be equal to 1.0 ft.");
         }
 
         [TestMethod]
-        public void Equals_DifferentValue_ReturnsFalse()
+        public void TestEquality_DifferentValue()
         {
             var first = new Feet(1.0);
             var second = new Feet(2.0);
 
             var result = first.Equals(second);
 
-            Assert.IsFalse(result);
+            Assert.IsFalse(result, "Expected 1.0 ft to NOT be equal to 2.0 ft.");
         }
 
         [TestMethod]
-        public void Equals_Null_ReturnsFalse()
-        {
-            var feet = new Feet(1.0);
-
-            var result = feet.Equals(null);
-
-            Assert.IsFalse(result);
-        }
-
-        [TestMethod]
-        public void OperatorEqual_SameValue_ReturnsTrue()
+        public void TestEquality_NullComparison()
         {
             var first = new Feet(1.0);
-            var second = new Feet(1.0);
 
-            Assert.IsTrue(first == second);
+            var result = first.Equals(null);
+
+            Assert.IsFalse(result, "Expected comparison with null to return false.");
         }
 
         [TestMethod]
-        public void OperatorNotEqual_DifferentValue_ReturnsTrue()
+        public void TestEquality_NonNumericInput()
         {
             var first = new Feet(1.0);
-            var second = new Feet(2.0);
+            object nonNumeric = "not a number";
 
-            Assert.IsTrue(first != second);
+            var result = first.Equals(nonNumeric);
+
+            Assert.IsFalse(result, "Expected comparison with non-numeric object to return false.");
+        }
+
+        [TestMethod]
+        public void TestEquality_SameReference()
+        {
+            var first = new Feet(1.0);
+
+            var result = first.Equals(first);
+
+            Assert.IsTrue(result, "Expected object to be equal to itself (reflexive property).");
         }
     }
 }
