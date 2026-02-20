@@ -23,6 +23,7 @@ This project demonstrates:
 - Domain-driven design principles
 - Full unit test coverage using MSTest
 - Immutable domain modeling
+- Cross-unit comparison support (UC4 Enhancement)
 
 ---
 
@@ -31,9 +32,9 @@ This project demonstrates:
 ```
 QuantityMeasurementSolution
 │
-├── QuantityMeasurementApp      → Console Application (Presentation Layer)
-├── QuantityMeasurement.Domain  → Core Business Logic (Domain Layer)
-└── QuantityMeasurement.Tests   → MSTest Unit Tests
+├── QuantityMeasurementApp → Console Application (Presentation Layer)
+├── QuantityMeasurement.Domain → Core Business Logic (Domain Layer)
+└── QuantityMeasurement.Tests → MSTest Unit Tests
 ```
 
 ### Layer Responsibilities
@@ -43,37 +44,23 @@ QuantityMeasurementSolution
 - Validates numeric values
 - Calls domain services
 - Displays formatted results
+- Demonstrates cross-unit comparison (UC4)
 - Contains NO business logic
 
 ### 🔹 Domain Layer
-- Contains Value Objects (`Feet`, `Inches`)
+- Contains Value Objects (`Feet`, `Inches`, `QuantityLength`)
 - Contains Domain Service (`QuantityComparisonService`)
 - Implements equality logic
 - Enforces immutability
 - Performs validation
+- Handles cross-unit conversion logic (UC4)
 
 ### 🔹 Test Layer
 - Provides full MSTest coverage
 - Validates equality contracts
 - Ensures null and edge-case handling
 - Protects backward compatibility
-
----
-
-## 🧠 Design Principles Applied
-
-- Encapsulation  
-- Immutability  
-- Separation of Concerns  
-- Single Responsibility Principle  
-- Equality Contract Compliance  
-- Null Safety & Type Safety  
-- Floating-Point Safe Comparison  
-- Clean Architecture  
-
----
-
-## 📂 Key Components
+- Validates cross-unit behavior (UC4)
 
 ---
 
@@ -148,6 +135,25 @@ Features:
 - Eliminates magic numbers
 - Enables scalable addition of new units
 
+### 5️⃣ UC4 – Cross Unit Equality Enhancement
+
+UC4 enables full comparison between different measurement units.
+
+Example:
+- 1 Foot == 12 Inches
+- 2 Feet == 24 Inches
+- 0.5 Foot == 6 Inches
+
+Enhancements:
+
+- All units are converted internally to a base unit (Feet)
+- Equality logic works seamlessly across units
+- No duplication of conversion logic
+- Fully backward compatible with UC1, UC2, and UC3
+- Maintains strict tolerance-based floating comparison
+- Preserves equality contract compliance
+- No breaking changes introduced
+
 ---
 
 ## 🔧 Domain Service — QuantityComparisonService
@@ -173,18 +179,23 @@ AreEqual(Inches first, Inches second)
 AreEqual(QuantityLength first, QuantityLength second)
 ```
 
+Additional UC4 Capability:
+
+- Compares different units transparently
+- Example: `AreEqual(1 Foot, 12 Inches)` returns True
+- Centralizes all conversion-aware comparison logic
+
 ---
 
 ## 🖥 Console Application Flow
 
-The application demonstrates:
+The application now demonstrates:
 
 - Feet equality check
 - Inches equality check
+- Cross-unit equality check (UC4)
 
 Example:
-
-```
 === Quantity Measurement Application ===
 
 Input: 1.0 ft and 1.0 ft
@@ -192,7 +203,9 @@ Output: Equal (True)
 
 Input: 1.0 inch and 1.0 inch
 Output: Equal (True)
-```
+
+Input: 1.0 ft and 12.0 inch
+Output: Equal (True)
 
 ---
 
@@ -216,23 +229,27 @@ Location:
 - Cross-unit equality validation (UC3)
 - CompareTo behavior validation
 - Backward compatibility verification
+- 1 Foot equals 12 Inches
+- 2 Feet equals 24 Inches
+- Cross-unit inequality validation
+- HashCode consistency across units
+- CompareTo cross-unit validation
+- Backward compatibility confirmation
 
-All UC1, UC2, and UC3 features include full test coverage to ensure production-grade reliability.
+All UC1, UC2, UC3, and UC4 features include full test coverage to ensure production-grade reliability.
 
 ---
 
-## ⚠ Previous Limitation (Resolved in UC3)
+## ⚠ UC4 Enhancement Summary
 
-Feet and Inches previously contained similar logic, introducing duplication.
+UC4 improves the system by:
 
-UC3 refactored the implementation to:
-
-- Introduce a generic `QuantityLength` class
-- Centralize conversion logic
-- Eliminate duplication
-- Improve scalability
-- Preserve backward compatibility
-
+- Enabling seamless comparison between different units
+- Centralizing conversion logic
+- Preserving immutability
+- Maintaining strict equality contracts
+- Ensuring zero architectural compromise
+- Supporting future scalability for additional units
 
 ---
 
@@ -267,12 +284,8 @@ dotnet test
 
 ## 🎯 Learning Outcomes
 
-- Designing immutable value objects
-- Implementing correct equality patterns
-- Handling floating-point precision safely
-- Writing clean, testable domain logic
-- Structuring a production-ready .NET solution
-- Writing meaningful, contract-validating unit tests
-- Maintaining architectural discipline while extending features
-
----
+- Designing scalable measurement systems
+- Implementing cross-unit conversion safely
+- Maintaining backward compatibility while extending features
+- Writing conversion-aware equality logic
+- Architecting extensible domain models
