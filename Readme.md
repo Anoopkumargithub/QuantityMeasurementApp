@@ -111,6 +111,45 @@ Features:
 
 ---
 
+### 3️⃣ QuantityLength (UC3 – Generic Quantity Implementation)
+
+Represents any length measurement using:
+
+- `double Value`
+- `LengthUnit Unit`
+
+Features:
+
+- Eliminates duplication between Feet and Inches
+- Implements `IEquatable<QuantityLength>`
+- Implements `IComparable<QuantityLength>`
+- Overrides `Equals()` and `GetHashCode()`
+- Supports `==` and `!=`
+- Converts all values to a common base unit (Feet)
+- Supports cross-unit comparison (e.g., 1 Foot == 12 Inches)
+- Uses tolerance-based floating comparison
+- Fully immutable
+- Validates against NaN and Infinity
+- Maintains full equality contract compliance
+
+---
+
+### 4️⃣ LengthUnit Enum (UC3)
+
+Defines supported measurement units:
+
+- Feet
+- Inches
+
+Features:
+
+- Type-safe unit handling
+- Centralized conversion factors
+- Eliminates magic numbers
+- Enables scalable addition of new units
+
+---
+
 ## 🔧 Domain Service — QuantityComparisonService
 
 Location:  
@@ -120,15 +159,18 @@ Responsibilities:
 
 - Compares two `Feet` objects
 - Compares two `Inches` objects
+- Compares two `QuantityLength` objects (UC3)
 - Validates null inputs
 - Centralizes comparison logic
 - Preserves equality contract
+- Maintains backward compatibility
 
 Methods:
 
 ```
 AreEqual(Feet first, Feet second)
 AreEqual(Inches first, Inches second)
+AreEqual(QuantityLength first, QuantityLength second)
 ```
 
 ---
@@ -171,8 +213,26 @@ Location:
 - Operator overload validation
 - HashCode consistency validation
 - Tolerance-based floating comparison
+- Cross-unit equality validation (UC3)
+- CompareTo behavior validation
+- Backward compatibility verification
 
-All UC2 features include full test coverage to ensure backward compatibility.
+All UC1, UC2, and UC3 features include full test coverage to ensure production-grade reliability.
+
+---
+
+## ⚠ Previous Limitation (Resolved in UC3)
+
+Feet and Inches previously contained similar logic, introducing duplication.
+
+UC3 refactored the implementation to:
+
+- Introduce a generic `QuantityLength` class
+- Centralize conversion logic
+- Eliminate duplication
+- Improve scalability
+- Preserve backward compatibility
+
 
 ---
 
@@ -192,18 +252,6 @@ dotnet run --project QuantityMeasurementApp
 ```
 dotnet test
 ```
-
----
-
-## ⚠ Current Limitation
-
-Feet and Inches classes currently contain similar logic, introducing minor duplication (DRY principle consideration).
-
-Future improvements may introduce:
-
-- A shared abstract base class
-- A generic Quantity type
-- Unit-based extensible design
 
 ---
 
