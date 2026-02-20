@@ -59,5 +59,26 @@ namespace QuantityMeasurement.Tests.Services
                 () => _service.AreEqual(first, second)
             );
         }
+
+        // NEW TESTS FOR INCHES
+        [TestMethod]
+        public void AreEqual_Inches_ShouldReturnTrue_WhenEqual()
+        {
+            var service = new QuantityComparisonService();
+            var first = new Inches(10);
+            var second = new Inches(10);
+
+            Assert.IsTrue(service.AreEqual(first, second));
+        }
+
+        [TestMethod]
+        public void AreEqual_Inches_ShouldThrow_WhenNull()
+        {
+            var service = new QuantityComparisonService();
+            var inches = new Inches(10);
+
+            Assert.ThrowsException<ArgumentNullException>(() => service.AreEqual(null!, inches));
+            Assert.ThrowsException<ArgumentNullException>(() => service.AreEqual(inches, null!));
+        }
     }
 }

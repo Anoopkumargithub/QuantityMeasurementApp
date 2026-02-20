@@ -8,10 +8,18 @@ namespace QuantityMeasurementApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("=== Quantity Measurement Application ===");
+            Console.WriteLine("=== Quantity Measurement Application ===\n");
+
+            DemonstrateFeetEquality();
+            Console.WriteLine();
+            DemonstrateInchesEquality();
+        }
+
+        private static void DemonstrateFeetEquality()
+        {
             Console.WriteLine("Enter first value in feet:");
 
-            if (!double.TryParse(Console.ReadLine(), out double firstInput))
+            if (!double.TryParse(Console.ReadLine(), out double firstValue))
             {
                 Console.WriteLine("Invalid input. Please enter a numeric value.");
                 return;
@@ -19,21 +27,47 @@ namespace QuantityMeasurementApp
 
             Console.WriteLine("Enter second value in feet:");
 
-            if (!double.TryParse(Console.ReadLine(), out double secondInput))
+            if (!double.TryParse(Console.ReadLine(), out double secondValue))
             {
                 Console.WriteLine("Invalid input. Please enter a numeric value.");
                 return;
             }
 
-            var firstFeet = new Feet(firstInput);
-            var secondFeet = new Feet(secondInput);
+            var firstFeet = new Feet(firstValue);
+            var secondFeet = new Feet(secondValue);
 
-            var comparisonService = new QuantityComparisonService();
+            var service = new QuantityComparisonService();
+            bool result = service.AreEqual(firstFeet, secondFeet);
 
-            bool result = comparisonService.AreEqual(firstFeet, secondFeet);
+            Console.WriteLine($"Input: {firstValue} ft and {secondValue} ft");
+            Console.WriteLine($"Output: Equal ({result})");
+        }
 
-            Console.WriteLine();
-            Console.WriteLine($"Input: {firstFeet} and {secondFeet}");
+        private static void DemonstrateInchesEquality()
+        {
+            Console.WriteLine("Enter first value in inches:");
+
+            if (!double.TryParse(Console.ReadLine(), out double firstValue))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+
+            Console.WriteLine("Enter second value in inches:");
+
+            if (!double.TryParse(Console.ReadLine(), out double secondValue))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+
+            var firstInches = new Inches(firstValue);
+            var secondInches = new Inches(secondValue);
+
+            var service = new QuantityComparisonService();
+            bool result = service.AreEqual(firstInches, secondInches);
+
+            Console.WriteLine($"Input: {firstValue} inch and {secondValue} inch");
             Console.WriteLine($"Output: Equal ({result})");
         }
     }

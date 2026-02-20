@@ -15,5 +15,17 @@ namespace QuantityMeasurement.Domain.Services
 
             return first.Equals(second);
         }
+
+        // NEW METHOD FOR INCHES
+        public bool AreEqual(Inches first, Inches second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            return first.Equals(second);
+        }
     }
 }
