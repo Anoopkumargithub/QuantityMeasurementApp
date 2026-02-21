@@ -94,5 +94,11 @@ dotnet test
   - Preserved immutability
   - Ensured commutativity
   - Added full MSTest coverage
+- [x] UC7: Addition with Target Unit Specification
+  - Added overloaded Add(first, second, targetUnit)
+  - Explicit result unit support
+  - Maintained backward compatibility with UC6
+  - Preserved immutability and commutativity
+  - Added extensive MSTest coverage
 
 ---
