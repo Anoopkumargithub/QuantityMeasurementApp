@@ -87,5 +87,12 @@ dotnet test
   - Added validation for NaN/Infinity
   - Extended console app to support conversion
   - Comprehensive MSTest coverage
+- [x] UC6: Addition of Two Length Units
+  - Implemented Add() instance and static overload
+  - Normalized to base unit (Feet) before arithmetic
+  - Result returned in unit of first operand
+  - Preserved immutability
+  - Ensured commutativity
+  - Added full MSTest coverage
 
 ---
