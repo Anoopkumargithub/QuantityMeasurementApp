@@ -106,5 +106,13 @@ dotnet test
   - Delegated all conversions to LengthUnit
   - Maintained backward compatibility (UC1–UC7)
   - Improved SRP and separation of concerns
+- [x] UC9: Implemented QuantityWeight for weight measurements
+- Introduced WeightUnit enum with conversion responsibility
+- Implemented QuantityWeight value object
+- Added equality with epsilon precision
+- Implemented implicit and explicit addition overloads
+- Ensured category type safety (Length ≠ Weight)
+- Maintained immutability and SOLID compliance
+- Architecture remains scalable for future categories
 
 ---
