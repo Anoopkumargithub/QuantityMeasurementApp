@@ -96,5 +96,47 @@ namespace QuantityMeasurement.Domain.ValueObjects
             double convertedValue = Convert(Value, Unit, target);
             return new QuantityLength(convertedValue, target);
         }
+
+        /// <summary>
+        /// Adds another QuantityLength to the current instance.
+        /// Result is returned in the unit of the first operand.
+        /// </summary>
+        /// <param name="other">The second QuantityLength.</param>
+        /// <returns>New QuantityLength with summed value.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public QuantityLength Add(QuantityLength other)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+        
+            if (!double.IsFinite(Value) || !double.IsFinite(other.Value))
+                throw new ArgumentException("Values must be finite numbers.");
+        
+            // Convert both to base unit (Feet)
+            double baseThis = Convert(Value, Unit, LengthUnit.Feet);
+            double baseOther = Convert(other.Value, other.Unit, LengthUnit.Feet);
+        
+            // Add in base unit
+            double baseSum = baseThis + baseOther;
+        
+            // Convert back to unit of first operand
+            double resultValue = Convert(baseSum, LengthUnit.Feet, Unit);
+        
+            return new QuantityLength(resultValue, Unit);
+        }
+        
+        /// <summary>
+        /// Static overload for addition.
+        /// </summary>
+        public static QuantityLength Add(
+            QuantityLength first,
+            QuantityLength second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+        
+            return first.Add(second);
+        }
     }
 }

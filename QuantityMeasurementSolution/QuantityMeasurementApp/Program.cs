@@ -21,16 +21,26 @@ namespace QuantityMeasurementApp
 
             Console.WriteLine("1. Equality Check");
             Console.WriteLine("2. Unit Conversion");
+            Console.WriteLine("3. Add Two Lengths");
             Console.Write("\nChoose option: ");
 
             string? choice = Console.ReadLine();
 
-            if (choice == "1")
-                DemonstrateEquality();
-            else if (choice == "2")
-                DemonstrateConversion();
-            else
-                Console.WriteLine("Invalid option.");
+            switch (choice)
+            {
+                case "1":
+                    DemonstrateEquality();
+                    break;
+                case "2":
+                    DemonstrateConversion();
+                    break;
+                case "3":
+                    DemonstrateAddition();
+                    break;
+                default:
+                    Console.WriteLine("Invalid option.");
+                    break;
+            }
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
@@ -87,6 +97,26 @@ namespace QuantityMeasurementApp
             catch (ArgumentException ex)
             {
                 Console.WriteLine($"Conversion failed: {ex.Message}");
+            }
+        }
+
+        private static void DemonstrateAddition()
+        {
+            QuantityLength? first = ReadQuantity("Enter first quantity");
+            if (first is null) return;
+
+            QuantityLength? second = ReadQuantity("Enter second quantity");
+            if (second is null) return;
+
+            try
+            {
+                QuantityLength result = first.Add(second);
+
+                Console.WriteLine($"\nResult: {result}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Addition failed: {ex.Message}");
             }
         }
 
