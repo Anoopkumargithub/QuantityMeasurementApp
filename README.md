@@ -100,5 +100,11 @@ dotnet test
   - Maintained backward compatibility with UC6
   - Preserved immutability and commutativity
   - Added extensive MSTest coverage
+- [x] UC8: Refactored LengthUnit to standalone enum with conversion responsibility
+  - Extracted conversion logic from QuantityLength
+  - Implemented ConvertToBaseUnit and ConvertFromBaseUnit
+  - Delegated all conversions to LengthUnit
+  - Maintained backward compatibility (UC1–UC7)
+  - Improved SRP and separation of concerns
 
 ---
