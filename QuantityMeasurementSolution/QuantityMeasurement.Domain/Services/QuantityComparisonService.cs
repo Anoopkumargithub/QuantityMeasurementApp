@@ -4,36 +4,27 @@ using QuantityMeasurement.Domain.ValueObjects;
 namespace QuantityMeasurement.Domain.Services
 {
     /// <summary>
-    /// Provides comparison operations for quantity value objects.
+    /// Service for comparing quantity measurements.
+    /// UC2 focuses on comparing different quantity measurements for equality.
+    /// This service abstracts the comparison logic, allowing for future extensions (e.g., adding more units).
     /// </summary>
     public sealed class QuantityComparisonService
     {
         /// <summary>
-        /// Checks equality between two <see cref="Feet"/> values.
+        /// Compares two quantity measurements for equality.
         /// </summary>
-        /// <param name="first">First feet measurement.</param>
-        /// <param name="second">Second feet measurement.</param>
-        /// <returns>True if equal; otherwise false.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
-        public bool AreEqual(Feet first, Feet second)
+        /// <param name="first">The first quantity measurement.</param>
+        /// <param name="second">The second quantity measurement.</param>
+        /// <returns>True if both measurements are equal; otherwise false.</returns>
+        public bool AreEqual(QuantityLength first, QuantityLength second)
         {
-            if (first is null) throw new ArgumentNullException(nameof(first), "First feet value cannot be null.");
-            if (second is null) throw new ArgumentNullException(nameof(second), "Second feet value cannot be null.");
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
 
-            return first.Equals(second);
-        }
-        /// <summary>
-        /// Checks equality between two <see cref="Inches"/> values.
-        /// </summary>
-        /// <param name="first">First inches measurement.</param>
-        /// <param name="second">Second inches measurement.</param>
-        /// <returns>True if equal; otherwise false.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
-        public bool AreEqual(Inches first, Inches second)
-        {
-            if (first is null) throw new ArgumentNullException(nameof(first), "First inches value cannot be null.");
-            if (second is null) throw new ArgumentNullException(nameof(second), "Second inches value cannot be null.");
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
 
+            // Use the value-based equality defined in QuantityLength, which handles unit conversion internally.
             return first.Equals(second);
         }
     }

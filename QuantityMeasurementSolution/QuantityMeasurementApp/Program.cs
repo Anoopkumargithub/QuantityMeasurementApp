@@ -1,106 +1,63 @@
 ﻿using System;
+using QuantityMeasurement.Domain.Enums;
 using QuantityMeasurement.Domain.Services;
 using QuantityMeasurement.Domain.ValueObjects;
 
 namespace QuantityMeasurementApp
 {
     /// <summary>
-    /// Console entry point for Quantity Measurement Application.
-    /// Handles only input/output. No business logic here.
+    /// Entry point for the Quantity Measurement Application.
+    /// This application demonstrates the use of QuantityComparisonService to compare different quantity measurements (UC3).
+    /// It allows users to input two measurements with their respective units and outputs whether they are equal based on value-based equality.
     /// </summary>
     internal static class Program
     {
+        // Using a single instance of the service for simplicity, as it is stateless and thread-safe.
         private static readonly QuantityComparisonService _service = new();
 
-        /// <summary>
-        /// Application entry point.
-        /// </summary>
+        // Main method serves as the entry point of the application, handling user input and displaying results.
         private static void Main()
         {
-            Console.WriteLine("=== Quantity Measurement Application ===\n");
+            Console.WriteLine("=== Quantity Measurement Application (UC3) ===\n");
 
-            DemonstrateFeetEquality();
-            Console.WriteLine();
-            DemonstrateInchesEquality();
+            // Read first quantity measurement from user input.
+            QuantityLength? first = ReadQuantity("Enter first value: ");
+            if (first is null) return;
 
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
-        }
+            // Read second quantity measurement from user input.
+            QuantityLength? second = ReadQuantity("Enter second value: ");
+            if (second is null) return;
 
-        /// <summary>
-        /// Demonstrates equality comparison for Feet values.
-        /// </summary>
-        private static void DemonstrateFeetEquality()
-        {
-            Console.WriteLine("---- FEET EQUALITY ----");
+            // Compare the two measurements using the QuantityComparisonService and display the result. 
+            bool result = _service.AreEqual(first, second);
 
-            Feet? firstFeet = ReadFeet("Enter first value in feet: ");
-            if (firstFeet is null) return;
-
-            Feet? secondFeet = ReadFeet("Enter second value in feet: ");
-            if (secondFeet is null) return;
-
-            bool result = _service.AreEqual(firstFeet, secondFeet);
-
-            Console.WriteLine($"\nInput: {firstFeet.Value} ft and {secondFeet.Value} ft");
+            Console.WriteLine($"\nInput: {first} and {second}");
             Console.WriteLine($"Output: Equal ({result})");
         }
 
-        /// <summary>
-        /// Demonstrates equality comparison for Inches values.
-        /// </summary>
-        private static void DemonstrateInchesEquality()
-        {
-            Console.WriteLine("---- INCHES EQUALITY ----");
-
-            Inches? firstInches = ReadInches("Enter first value in inches: ");
-            if (firstInches is null) return;
-
-            Inches? secondInches = ReadInches("Enter second value in inches: ");
-            if (secondInches is null) return;
-
-            bool result = _service.AreEqual(firstInches, secondInches);
-
-            Console.WriteLine($"\nInput: {firstInches.Value} inch and {secondInches.Value} inch");
-            Console.WriteLine($"Output: Equal ({result})");
-        }
-
-        /// <summary>
-        /// Reads and validates Feet input from console.
-        /// </summary>
-        /// <param name="message">Prompt message.</param>
-        /// <returns>Valid Feet object or null if invalid.</returns>
-        private static Feet? ReadFeet(string message)
+        // Helper method to read a quantity measurement from user input, including validation for numeric value and unit type.
+        private static QuantityLength? ReadQuantity(string message)
         {
             Console.Write(message);
-            string? input = Console.ReadLine();
-
-            if (!Feet.TryCreate(input, out Feet? feet))
+            // Validate numeric input for the quantity value, ensuring it can be parsed to a double.
+            if (!double.TryParse(Console.ReadLine(), out double value))
             {
-                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                Console.WriteLine("Invalid numeric value.");
                 return null;
             }
 
-            return feet;
-        }
+            Console.Write("Enter unit (Feet/Inches): ");
+            string? unitInput = Console.ReadLine();
 
-        /// <summary>
-        /// Reads and validates Inches input from console.
-        /// </summary>
-        /// <param name="message">Prompt message.</param>
-        /// <returns>Valid Inches object or null if invalid.</returns>
-        private static Inches? ReadInches(string message)
-        {
-            Console.Write(message);
-            string? input = Console.ReadLine();
-
-            if (!Inches.TryCreate(input, out Inches? inches))
+            // Validate unit type input, ensuring it matches one of the defined LengthUnit enum values (case-insensitive).
+            if (!Enum.TryParse(unitInput, true, out LengthUnit unit))
             {
-                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                Console.WriteLine("Invalid unit type.");
                 return null;
             }
 
-            return inches;
+            // Return a new QuantityLength instance based on the validated user input, which will be used for comparison in the service.
+            return new QuantityLength(value, unit);
         }
     }
 }
