@@ -138,5 +138,44 @@ namespace QuantityMeasurement.Domain.ValueObjects
         
             return first.Add(second);
         }
+
+        /// <summary>
+        /// Adds two QuantityLength objects and returns result in explicitly specified target unit.
+        /// </summary>
+        /// <param name="first">First operand.</param>
+        /// <param name="second">Second operand.</param>
+        /// <param name="targetUnit">Explicit result unit.</param>
+        /// <returns>New QuantityLength in target unit.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public static QuantityLength Add(
+            QuantityLength first,
+            QuantityLength second,
+            LengthUnit targetUnit)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            if (!Enum.IsDefined(typeof(LengthUnit), targetUnit))
+                throw new ArgumentException("Invalid target unit.");
+
+            if (!double.IsFinite(first.Value) || !double.IsFinite(second.Value))
+                throw new ArgumentException("Values must be finite numbers.");
+
+            // Convert both to base unit (Feet)
+            double baseFirst = Convert(first.Value, first.Unit, LengthUnit.Feet);
+            double baseSecond = Convert(second.Value, second.Unit, LengthUnit.Feet);
+
+            // Add in base
+            double baseSum = baseFirst + baseSecond;
+
+            // Convert to explicit target unit
+            double finalValue = Convert(baseSum, LengthUnit.Feet, targetUnit);
+
+            return new QuantityLength(finalValue, targetUnit);
+        }
     }
 }

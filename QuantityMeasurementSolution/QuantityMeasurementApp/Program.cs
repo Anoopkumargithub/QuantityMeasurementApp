@@ -22,6 +22,7 @@ namespace QuantityMeasurementApp
             Console.WriteLine("1. Equality Check");
             Console.WriteLine("2. Unit Conversion");
             Console.WriteLine("3. Add Two Lengths");
+            Console.WriteLine("4. Add Two Lengths with Target Unit");
             Console.Write("\nChoose option: ");
 
             string? choice = Console.ReadLine();
@@ -36,6 +37,9 @@ namespace QuantityMeasurementApp
                     break;
                 case "3":
                     DemonstrateAddition();
+                    break;
+                case "4":
+                    DemonstrateAdditionWithTargetUnit();
                     break;
                 default:
                     Console.WriteLine("Invalid option.");
@@ -112,6 +116,32 @@ namespace QuantityMeasurementApp
             {
                 QuantityLength result = first.Add(second);
 
+                Console.WriteLine($"\nResult: {result}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Addition failed: {ex.Message}");
+            }
+        }
+
+        private static void DemonstrateAdditionWithTargetUnit()
+        {
+            QuantityLength? first = ReadQuantity("Enter first quantity");
+            if (first is null) return;
+
+            QuantityLength? second = ReadQuantity("Enter second quantity");
+            if (second is null) return;
+
+            Console.Write("Enter target unit (Feet/Inches/Yards/Centimeters): ");
+            if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit targetUnit))
+            {
+                Console.WriteLine("Invalid target unit.");
+                return;
+            }
+
+            try
+            {
+                QuantityLength result = QuantityLength.Add(first, second, targetUnit);
                 Console.WriteLine($"\nResult: {result}");
             }
             catch (Exception ex)
