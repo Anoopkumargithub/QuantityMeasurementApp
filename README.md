@@ -64,9 +64,15 @@ dotnet test
 
 -  UC1: Feet measurement equality
 - [x] UC2: Inches measurement equality (separate from Feet)
-- Added `Inches` value object with value-based equality
-- Added `TryCreate(...)` numeric validation for both `Feet` and `Inches`
-- Reduced `Main()` dependency using `DemonstrateFeetEquality()` and `DemonstrateInchesEquality()`
-- Added MSTest coverage for Inches + non-numeric input validation
+    - Added `Inches` value object with value-based equality
+    - Added `TryCreate(...)` numeric validation for both `Feet` and `Inches`
+    - Reduced `Main()` dependency using `DemonstrateFeetEquality()` and `DemonstrateInchesEquality()`
+    - Added MSTest coverage for Inches + non-numeric input validation
+- [x] UC3: Generic QuantityLength class (DRY Principle)
+    - Eliminated duplication between Feet and Inches
+    - Introduced LengthUnit enum
+    - Centralized conversion logic
+    - Enabled cross-unit equality (1 ft == 12 inches)
+    - Preserved UC1 and UC2 functionality
 
 ---
