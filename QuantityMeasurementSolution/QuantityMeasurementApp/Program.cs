@@ -1,60 +1,35 @@
 ﻿using System;
 using QuantityMeasurement.Domain.Enums;
-using QuantityMeasurement.Domain.Services;
 using QuantityMeasurement.Domain.ValueObjects;
 
 namespace QuantityMeasurementApp
 {
     /// <summary>
     /// Console entry point for Quantity Measurement Application.
-    /// Supports Length + Weight operations.
+    /// Supports Length and Weight operations using generic Quantity<TUnit>.
     /// </summary>
     internal static class Program
     {
-        // Using a service to handle comparison logic, adhering to separation of concerns and allowing for future extensibility.
-        private static readonly QuantityComparisonService _service = new();
-
-        // Main method to run the console application.
         private static void Main()
         {
-            Console.WriteLine("=== Quantity Measurement Application ===\n");
+            Console.WriteLine("=== Quantity Measurement Application (UC10 Generic) ===\n");
 
-            Console.WriteLine("1. Length Equality Check");
-            Console.WriteLine("2. Length Unit Conversion");
-            Console.WriteLine("3. Add Two Lengths");
-            Console.WriteLine("4. Add Two Lengths with Target Unit");
-            Console.WriteLine("5. Weight Equality");
-            Console.WriteLine("6. Weight Conversion");
-            Console.WriteLine("7. Weight Addition");
-            Console.Write("\nChoose option: ");
+            Console.WriteLine("1. Length Operations");
+            Console.WriteLine("2. Weight Operations");
+            Console.Write("\nChoose category: ");
 
-            string? choice = Console.ReadLine();
+            string? category = Console.ReadLine();
 
-            switch (choice)
+            switch (category)
             {
                 case "1":
-                    DemonstrateLengthEquality();
+                    HandleLengthOperations();
                     break;
                 case "2":
-                    DemonstrateLengthConversion();
-                    break;
-                case "3":
-                    DemonstrateLengthAddition();
-                    break;
-                case "4":
-                    DemonstrateLengthAdditionWithTargetUnit();
-                    break;
-                case "5":
-                    DemonstrateWeightEquality();
-                    break;
-                case "6":
-                    DemonstrateWeightConversion();
-                    break;
-                case "7":
-                    DemonstrateWeightAddition();
+                    HandleWeightOperations();
                     break;
                 default:
-                    Console.WriteLine("Invalid option.");
+                    Console.WriteLine("Invalid category.");
                     break;
             }
 
@@ -62,243 +37,182 @@ namespace QuantityMeasurementApp
             Console.ReadKey();
         }
 
-        // -------------------- LENGTH --------------------
+        // ================= LENGTH =================
 
-        private static void DemonstrateLengthEquality()
+        private static void HandleLengthOperations()
         {
-            QuantityLength? first = ReadLength("Enter first length quantity");
-            if (first is null) return;
+            Console.WriteLine("\n1. Equality");
+            Console.WriteLine("2. Conversion");
+            Console.WriteLine("3. Addition");
+            Console.WriteLine("4. Addition with Target Unit");
+            Console.Write("Choose operation: ");
 
-            QuantityLength? second = ReadLength("Enter second length quantity");
-            if (second is null) return;
+            string? choice = Console.ReadLine();
 
-            bool result = _service.AreEqual(first, second);
-
-            Console.WriteLine($"\nInput: {first} and {second}");
-            Console.WriteLine($"Output: Equal ({result})");
-        }
-
-        /// <summary>
-        /// Demonstrates conversion from one unit to another.
-        /// </summary>
-
-        private static void DemonstrateLengthConversion()
-        {
-            Console.Write("Enter value to convert: ");
-            if (!double.TryParse(Console.ReadLine(), out double value))
+            switch (choice)
             {
-                Console.WriteLine("Invalid numeric value.");
-                return;
-            }
+                case "1":
+                    var l1 = ReadQuantity<LengthUnit>("Enter first length");
+                    var l2 = ReadQuantity<LengthUnit>("Enter second length");
 
-            Console.Write("From unit (Feet/Inches/Yards/Centimeters): ");
-            if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit fromUnit))
-            {
-                Console.WriteLine("Invalid source unit.");
-                return;
-            }
+                    if (l1 == null || l2 == null) return;
 
-            Console.Write("To unit (Feet/Inches/Yards/Centimeters): ");
-            if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit toUnit))
-            {
-                Console.WriteLine("Invalid target unit.");
-                return;
-            }
+                    Console.WriteLine($"\nEqual: {l1.Equals(l2)}");
+                    break;
 
-            try
-            {
-                double result = QuantityLength.Convert(value, fromUnit, toUnit);
-                Console.WriteLine($"\nConverted Result: {result}");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Conversion failed: {ex.Message}");
-            }
-        }
+                case "2":
+                    var length = ReadQuantity<LengthUnit>("Enter length to convert");
+                    if (length == null) return;
 
-        private static void DemonstrateLengthAddition()
-        {
-            QuantityLength? first = ReadLength("Enter first length quantity");
-            if (first is null) return;
+                    Console.Write("Target unit (Feet/Inches/Yards/Centimeters): ");
+                    if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit targetLength))
+                    {
+                        Console.WriteLine("Invalid unit.");
+                        return;
+                    }
 
-            QuantityLength? second = ReadLength("Enter second length quantity");
-            if (second is null) return;
+                    Console.WriteLine($"\nConverted: {length.ConvertTo(targetLength)}");
+                    break;
 
-            try
-            {
-                QuantityLength result = first.Add(second);
+                case "3":
+                    var a = ReadQuantity<LengthUnit>("Enter first length");
+                    var b = ReadQuantity<LengthUnit>("Enter second length");
 
-                Console.WriteLine($"\nResult: {result}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Addition failed: {ex.Message}");
+                    if (a == null || b == null) return;
+
+                    Console.WriteLine($"\nResult: {a.Add(b)}");
+                    break;
+
+                case "4":
+                    var x = ReadQuantity<LengthUnit>("Enter first length");
+                    var y = ReadQuantity<LengthUnit>("Enter second length");
+
+                    if (x == null || y == null) return;
+
+                    Console.Write("Target unit (Feet/Inches/Yards/Centimeters): ");
+                    if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit targetAdd))
+                    {
+                        Console.WriteLine("Invalid unit.");
+                        return;
+                    }
+
+                    Console.WriteLine($"\nResult: {x.Add(y, targetAdd)}");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid operation.");
+                    break;
             }
         }
 
-        private static void DemonstrateLengthAdditionWithTargetUnit()
+        // ================= WEIGHT =================
+
+        private static void HandleWeightOperations()
         {
-            QuantityLength? first = ReadLength("Enter first length quantity");
-            if (first is null) return;
+            Console.WriteLine("\n1. Equality");
+            Console.WriteLine("2. Conversion");
+            Console.WriteLine("3. Addition");
+            Console.WriteLine("4. Addition with Target Unit");
+            Console.Write("Choose operation: ");
 
-            QuantityLength? second = ReadLength("Enter second length quantity");
-            if (second is null) return;
+            string? choice = Console.ReadLine();
 
-            Console.Write("Enter target unit (Feet/Inches/Yards/Centimeters): ");
-            if (!Enum.TryParse(Console.ReadLine(), true, out LengthUnit targetUnit))
+            switch (choice)
             {
-                Console.WriteLine("Invalid target unit.");
-                return;
-            }
+                case "1":
+                    var w1 = ReadQuantity<WeightUnit>("Enter first weight");
+                    var w2 = ReadQuantity<WeightUnit>("Enter second weight");
 
-            try
-            {
-                QuantityLength result = QuantityLength.Add(first, second, targetUnit);
-                Console.WriteLine($"\nResult: {result}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Addition failed: {ex.Message}");
+                    if (w1 == null || w2 == null) return;
+
+                    Console.WriteLine($"\nEqual: {w1.Equals(w2)}");
+                    break;
+
+                case "2":
+                    var weight = ReadQuantity<WeightUnit>("Enter weight to convert");
+                    if (weight == null) return;
+
+                    Console.Write("Target unit (Gram/Kilogram/Pound/Tonne): ");
+                    if (!Enum.TryParse(Console.ReadLine(), true, out WeightUnit targetWeight))
+                    {
+                        Console.WriteLine("Invalid unit.");
+                        return;
+                    }
+
+                    Console.WriteLine($"\nConverted: {weight.ConvertTo(targetWeight)}");
+                    break;
+
+                case "3":
+                    var a = ReadQuantity<WeightUnit>("Enter first weight");
+                    var b = ReadQuantity<WeightUnit>("Enter second weight");
+
+                    if (a == null || b == null) return;
+
+                    Console.WriteLine($"\nResult: {a.Add(b)}");
+                    break;
+
+                case "4":
+                    var x = ReadQuantity<WeightUnit>("Enter first weight");
+                    var y = ReadQuantity<WeightUnit>("Enter second weight");
+
+                    if (x == null || y == null) return;
+
+                    Console.Write("Target unit (Gram/Kilogram/Pound/Tonne): ");
+                    if (!Enum.TryParse(Console.ReadLine(), true, out WeightUnit targetAdd))
+                    {
+                        Console.WriteLine("Invalid unit.");
+                        return;
+                    }
+
+                    Console.WriteLine($"\nResult: {x.Add(y, targetAdd)}");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid operation.");
+                    break;
             }
         }
 
-        /// <summary>
-        /// Reads a quantity from user input.
-        /// </summary>
-        /// <param name="label">Label shown to the user.</param>
-        /// <returns>QuantityLength instance if valid; otherwise null.</returns>
-        private static QuantityLength? ReadLength(string label)
+        // ================= GENERIC INPUT =================
+
+        private static Quantity<TUnit>? ReadQuantity<TUnit>(string label)
+            where TUnit : struct, Enum
         {
             Console.WriteLine($"\n{label}");
 
             Console.Write("Enter numeric value: ");
             if (!double.TryParse(Console.ReadLine(), out double value))
             {
-                Console.WriteLine("Invalid numeric value.");
+                Console.WriteLine("Invalid number.");
                 return null;
             }
-
-            Console.Write("Enter unit (Feet/Inches/Yards/Centimeters): ");
-            string? unitInput = Console.ReadLine();
-
-            // Try parsing the unit input to the LengthUnit enum, ignoring case sensitivity.
-            if (!Enum.TryParse(unitInput, true, out LengthUnit unit))
+            
+            if(typeof(TUnit) == typeof(LengthUnit))
             {
-                Console.WriteLine("Invalid unit type.");
+                Console.Write("Enter unit (Feet/Inches/Yards/Centimeters): ");
+            }
+            else if (typeof(TUnit) == typeof(WeightUnit))
+            {
+                Console.Write("Enter unit (Gram/Kilogram/Pound/Tonne): ");
+            }
+            else{
+                Console.WriteLine("Unsupported unit type.");
+                creturn null;
+            }
+            Console.Write("Enter unit: ");
+            if (!Enum.TryParse(Console.ReadLine(), true, out TUnit unit))
+            {
+                Console.WriteLine("Invalid unit.");
                 return null;
             }
 
             try
             {
-                // Return a new QuantityLength instance with the provided value and unit.
-                return new QuantityLength(value, unit);
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Invalid input: {ex.Message}");
-                return null;
-            }
-        }
-
-        // -------------------- WEIGHT --------------------
-
-        private static void DemonstrateWeightEquality()
-        {
-            QuantityWeight? first = ReadWeight("Enter first weight quantity");
-            if (first is null) return;
-
-            QuantityWeight? second = ReadWeight("Enter second weight quantity");
-            if (second is null) return;
-
-            bool result = first.Equals(second);
-
-            Console.WriteLine($"\nInput: {first} and {second}");
-            Console.WriteLine($"Output: Equal ({result})");
-        }
-
-        private static void DemonstrateWeightConversion()
-        {
-            Console.Write("Enter value to convert: ");
-            if (!double.TryParse(Console.ReadLine(), out double value))
-            {
-                Console.WriteLine("Invalid numeric value.");
-                return;
-            }
-
-            Console.Write("From unit (Kilogram/Gram/Pound): ");
-            if (!Enum.TryParse(Console.ReadLine(), true, out WeightUnit fromUnit))
-            {
-                Console.WriteLine("Invalid source unit.");
-                return;
-            }
-
-            Console.Write("To unit (Kilogram/Gram/Pound): ");
-            if (!Enum.TryParse(Console.ReadLine(), true, out WeightUnit toUnit))
-            {
-                Console.WriteLine("Invalid target unit.");
-                return;
-            }
-
-            try
-            {
-                // Convert by creating quantity then converting.
-                var q = new QuantityWeight(value, fromUnit);
-                var converted = q.ConvertTo(toUnit);
-
-                Console.WriteLine($"\nConverted Result: {converted.Value} {converted.Unit}");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Conversion failed: {ex.Message}");
-            }
-        }
-
-        private static void DemonstrateWeightAddition()
-        {
-            QuantityWeight? first = ReadWeight("Enter first weight quantity");
-            if (first is null) return;
-
-            QuantityWeight? second = ReadWeight("Enter second weight quantity");
-            if (second is null) return;
-
-            try
-            {
-                QuantityWeight result = first.Add(second);
-                Console.WriteLine($"\nResult: {result}");
+                return new Quantity<TUnit>(value, unit);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Addition failed: {ex.Message}");
-            }
-        }
-
-        private static QuantityWeight? ReadWeight(string label)
-        {
-            Console.WriteLine($"\n{label}");
-
-            Console.Write("Enter numeric value: ");
-            if (!double.TryParse(Console.ReadLine(), out double value))
-            {
-                Console.WriteLine("Invalid numeric value.");
-                return null;
-            }
-
-            Console.Write("Enter unit (Kilogram/Gram/Pound): ");
-            string? unitInput = Console.ReadLine();
-
-            if (!Enum.TryParse(unitInput, true, out WeightUnit unit))
-            {
-                Console.WriteLine("Invalid unit type.");
-                return null;
-            }
-
-            try
-            {
-                return new QuantityWeight(value, unit);
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Invalid input: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
                 return null;
             }
         }
