@@ -6,57 +6,61 @@ using QuantityMeasurement.Domain.ValueObjects;
 namespace QuantityMeasurementApp
 {
     /// <summary>
-    /// Entry point for the Quantity Measurement Application.
-    /// This application demonstrates the use of QuantityComparisonService to compare different quantity measurements (UC3).
-    /// It allows users to input two measurements with their respective units and outputs whether they are equal based on value-based equality.
+    /// Console entry point for Quantity Measurement Application (UC4).
+    /// Supports Feet, Inches, Yards and Centimeters.
     /// </summary>
     internal static class Program
     {
-        // Using a single instance of the service for simplicity, as it is stateless and thread-safe.
+        // Using a service to handle comparison logic, adhering to separation of concerns and allowing for future extensibility.
         private static readonly QuantityComparisonService _service = new();
 
-        // Main method serves as the entry point of the application, handling user input and displaying results.
+        // Main method to run the console application.
         private static void Main()
         {
-            Console.WriteLine("=== Quantity Measurement Application (UC3) ===\n");
+            Console.WriteLine("=== Quantity Measurement Application (UC4) ===\n");
+            Console.WriteLine("Supported Units: Feet, Inches, Yards, Centimeters\n");
 
-            // Read first quantity measurement from user input.
-            QuantityLength? first = ReadQuantity("Enter first value: ");
+            QuantityLength? first = ReadQuantity("Enter first quantity");
             if (first is null) return;
 
-            // Read second quantity measurement from user input.
-            QuantityLength? second = ReadQuantity("Enter second value: ");
+            QuantityLength? second = ReadQuantity("Enter second quantity");
             if (second is null) return;
 
-            // Compare the two measurements using the QuantityComparisonService and display the result. 
+            // Compare the two quantities using the service, which abstracts the comparison logic and handles unit conversion internally.
             bool result = _service.AreEqual(first, second);
 
             Console.WriteLine($"\nInput: {first} and {second}");
             Console.WriteLine($"Output: Equal ({result})");
+
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
         }
 
-        // Helper method to read a quantity measurement from user input, including validation for numeric value and unit type.
-        private static QuantityLength? ReadQuantity(string message)
+        /// <summary>
+        /// Reads a quantity from user input.
+        /// </summary>
+        private static QuantityLength? ReadQuantity(string label)
         {
-            Console.Write(message);
-            // Validate numeric input for the quantity value, ensuring it can be parsed to a double.
+            Console.WriteLine($"\n{label}");
+
+            Console.Write("Enter numeric value: ");
             if (!double.TryParse(Console.ReadLine(), out double value))
             {
                 Console.WriteLine("Invalid numeric value.");
                 return null;
             }
 
-            Console.Write("Enter unit (Feet/Inches): ");
+            Console.Write("Enter unit (Feet/Inches/Yards/Centimeters): ");
             string? unitInput = Console.ReadLine();
 
-            // Validate unit type input, ensuring it matches one of the defined LengthUnit enum values (case-insensitive).
+            // Try parsing the unit input to the LengthUnit enum, ignoring case sensitivity. This allows for flexible user input while ensuring valid units.
             if (!Enum.TryParse(unitInput, true, out LengthUnit unit))
             {
                 Console.WriteLine("Invalid unit type.");
                 return null;
             }
 
-            // Return a new QuantityLength instance based on the validated user input, which will be used for comparison in the service.
+            // Return a new QuantityLength instance with the provided value and unit. The QuantityLength class will handle
             return new QuantityLength(value, unit);
         }
     }

@@ -1,13 +1,16 @@
+using System;
+
 namespace QuantityMeasurement.Domain.Enums
 {
     /// <summary>
-    /// Represents supported length units and their conversion factors
-    /// relative to base unit (Feet).
+    /// Supported length units with conversion factors relative to FEET.
     /// </summary>
     public enum LengthUnit
     {
         Feet,
-        Inches
+        Inches,
+        Yards,
+        Centimeters
     }
 
     public static class LengthUnitExtensions
@@ -19,8 +22,10 @@ namespace QuantityMeasurement.Domain.Enums
         {
             return unit switch
             {
-                LengthUnit.Feet => 1.0, // Base unit
-                LengthUnit.Inches => 1.0 / 12.0,  // 1 inch = 1/12 feet
+                LengthUnit.Feet => 1.0,     // Base unit
+                LengthUnit.Inches => 1.0 / 12.0,        // 1 foot = 12 inches
+                LengthUnit.Yards => 3.0,        // 1 yard = 3 feet
+                LengthUnit.Centimeters => 0.393701 / 12.0,      // 1 inch = 2.54 cm => 1 cm = 0.393701 inches => 1 cm = 0.393701/12 feet
                 _ => throw new ArgumentException("Unsupported length unit.")
             };
         }
