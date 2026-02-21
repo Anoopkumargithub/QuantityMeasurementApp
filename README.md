@@ -80,5 +80,12 @@ dotnet test
   - No modification required in QuantityLength (DRY validated)
   - Full cross-unit equality support
   - Backward compatibility preserved
+- [x] UC5: Unit-to-Unit Conversion
+  - Added static Convert API
+  - Added instance ConvertTo method
+  - Implemented epsilon-based precision handling
+  - Added validation for NaN/Infinity
+  - Extended console app to support conversion
+  - Comprehensive MSTest coverage
 
 ---
