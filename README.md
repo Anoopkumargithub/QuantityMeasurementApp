@@ -63,11 +63,10 @@ dotnet test
 ## ✅ UC Status
 
 -  UC1: Feet measurement equality
+- [x] UC2: Inches measurement equality (separate from Feet)
+- Added `Inches` value object with value-based equality
+- Added `TryCreate(...)` numeric validation for both `Feet` and `Inches`
+- Reduced `Main()` dependency using `DemonstrateFeetEquality()` and `DemonstrateInchesEquality()`
+- Added MSTest coverage for Inches + non-numeric input validation
 
 ---
-
-## 6) Proper git commit message (UC1)
-
-```text
-feat(uc1): implement Feet value object equality with console demo and MSTest coverage
-```
