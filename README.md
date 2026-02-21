@@ -74,5 +74,11 @@ dotnet test
     - Centralized conversion logic
     - Enabled cross-unit equality (1 ft == 12 inches)
     - Preserved UC1 and UC2 functionality
+- [x] UC4: Extended Unit Support (Yards & Centimeters)
+  - Added Yards and Centimeters to LengthUnit enum
+  - Centralized conversion factors
+  - No modification required in QuantityLength (DRY validated)
+  - Full cross-unit equality support
+  - Backward compatibility preserved
 
 ---
