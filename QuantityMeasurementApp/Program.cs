@@ -38,6 +38,8 @@ namespace QuantityMeasurementApp
             DemonstrateFeetEquality();
             Console.WriteLine();
             DemonstrateInchesEquality();
+            Console.WriteLine();
+            DemonstrateLengthConversion();
         }
 
         // This method demonstrates the equality comparison of two Feet instances by prompting the user for input values, creating Feet objects, and using the QuantityComparisonService to determine if the measurements are equal, while also handling invalid input gracefully.
@@ -96,6 +98,61 @@ namespace QuantityMeasurementApp
 
             Console.WriteLine($"Input: {firstValue} inch and {secondValue} inch");
             Console.WriteLine($"Output: Equal ({result})");
+        }
+
+        // This method demonstrates the conversion of length measurements between different units (Feet, Inches, Yards) using the QuantityComparisonService's Convert method, allowing users to see how raw numeric values and value objects can be converted between units while maintaining accurate measurement logic based on the underlying QuantityLength class.
+        private static void DemonstrateLengthConversion()
+        {
+            var service = new QuantityComparisonService();
+
+            Console.WriteLine("=== Length Conversion Demo ===");
+
+            // Example 1: raw value conversion
+            Console.WriteLine("Enter value in feet:");
+
+            if (!double.TryParse(Console.ReadLine(), out double valueInFeet))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+            double inInches = service.Convert(valueInFeet, LengthUnit.Feet, LengthUnit.Inches);
+            Console.WriteLine($"{valueInFeet} ft = {inInches} in");
+
+            // Example 2: Feet instance to Inches
+            Console.WriteLine("Enter value in feet:");
+
+            if (!double.TryParse(Console.ReadLine(), out double valueInFeetToinches))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+            var feet = new Feet(valueInFeetToinches);
+            QuantityLength convertedFromFeet = service.Convert(feet, LengthUnit.Inches);
+            Console.WriteLine($"{feet.Value} ft = {convertedFromFeet.Value} {convertedFromFeet.Unit}");
+
+            // Example 3: Inches instance to Feet
+            Console.WriteLine("Enter value in inches:");
+
+            if (!double.TryParse(Console.ReadLine(), out double valueInInchesToFeet))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+            var inches = new Inches(valueInInchesToFeet);
+            QuantityLength convertedFromInches = service.Convert(inches, LengthUnit.Feet);
+            Console.WriteLine($"{inches.Value} in = {convertedFromInches.Value} {convertedFromInches.Unit}");
+
+            // Example 4: QuantityLength instance conversion
+            Console.WriteLine("Enter value in yards:");
+
+            if (!double.TryParse(Console.ReadLine(), out double valueInYards))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return;
+            }
+            var yards = new QuantityLength(valueInYards, LengthUnit.Yards);
+            QuantityLength convertedFromYards = service.Convert(yards, LengthUnit.Inches);
+            Console.WriteLine($"{yards.Value} {yards.Unit} = {convertedFromYards.Value} {convertedFromYards.Unit}");
         }
     }
 }

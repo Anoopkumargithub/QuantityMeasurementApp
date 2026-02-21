@@ -58,5 +58,33 @@ namespace QuantityMeasurement.Domain.Services
 
             return first.Equals(second);
         }
+
+        // Convert raw numeric value from source unit to target unit
+        public double Convert(double value, LengthUnit sourceUnit, LengthUnit targetUnit)
+        {
+            return QuantityLength.Convert(value, sourceUnit, targetUnit);
+        }
+
+        // Convert a QuantityLength instance to a target unit
+        public QuantityLength Convert(QuantityLength quantity, LengthUnit targetUnit)
+        {
+            if (quantity is null) throw new ArgumentNullException(nameof(quantity));
+            return quantity.ConvertTo(targetUnit);
+        }
+
+        // Convert a Feet instance to a target unit (returns QuantityLength)
+        public QuantityLength Convert(Feet feet, LengthUnit targetUnit)
+        {
+            if (feet is null) throw new ArgumentNullException(nameof(feet));
+            return new QuantityLength(feet.Value, LengthUnit.Feet).ConvertTo(targetUnit);
+        }
+
+        // Convert an Inches instance to a target unit (returns QuantityLength)
+        public QuantityLength Convert(Inches inches, LengthUnit targetUnit)
+        {
+            if (inches is null) throw new ArgumentNullException(nameof(inches));
+            return new QuantityLength(inches.Value, LengthUnit.Inches).ConvertTo(targetUnit);
+        }
+
     }
 }

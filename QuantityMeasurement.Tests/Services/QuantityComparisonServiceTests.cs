@@ -17,6 +17,8 @@ namespace QuantityMeasurement.Tests.Services
             _service = new QuantityComparisonService();
         }
 
+        #region Feet Comparisons
+
         [TestMethod]
         // This test method verifies that the AreEqual method of the QuantityComparisonService returns true when comparing two Feet instances with the same value, ensuring that the equality logic correctly identifies equivalent measurements in feet.
         public void AreEqual_SameValues_ReturnsTrue()
@@ -65,7 +67,10 @@ namespace QuantityMeasurement.Tests.Services
             );
         }
 
-        // NEW TESTS FOR INCHES
+        #endregion
+
+        #region Inches Comparisons
+
         [TestMethod]
         // This test method verifies that the AreEqual method of the QuantityComparisonService returns true when comparing two Inches instances with the same value, ensuring that the equality logic correctly identifies equivalent measurements in inches.
         public void AreEqual_Inches_ShouldReturnTrue_WhenEqual()
@@ -87,5 +92,72 @@ namespace QuantityMeasurement.Tests.Services
             Assert.ThrowsException<ArgumentNullException>(() => service.AreEqual(null!, inches));
             Assert.ThrowsException<ArgumentNullException>(() => service.AreEqual(inches, null!));
         }
+
+        #endregion
+
+        #region QuantityLength Comparisons (Feet vs Inches)
+
+        [TestMethod]
+        public void AreEqual_FeetAndInches_EquivalentValues_ShouldReturnTrue()
+        {
+            var feet = new Feet(3);
+            var inches = new Inches(36);
+
+            // Use QuantityLength comparison internally
+            var result = _service.AreEqual(
+                new QuantityLength(feet.Value, LengthUnit.Feet),
+                new QuantityLength(inches.Value, LengthUnit.Inches)
+            );
+
+            Assert.IsTrue(result, "3 ft should be equal to 36 inches.");
+        }
+
+        [TestMethod]
+        public void AreEqual_FeetAndInches_DifferentValues_ShouldReturnFalse()
+        {
+            var feet = new Feet(2);
+            var inches = new Inches(36);
+
+            var result = _service.AreEqual(
+                new QuantityLength(feet.Value, LengthUnit.Feet),
+                new QuantityLength(inches.Value, LengthUnit.Inches)
+            );
+
+            Assert.IsFalse(result, "2 ft should not be equal to 36 inches.");
+        }
+
+        #endregion
+
+        #region Null Parameter Validation
+
+        [TestMethod]
+        public void AreEqual_QuantityLength_NullParameters_ShouldThrow()
+        {
+            var first = new QuantityLength(1.0, LengthUnit.Feet);
+            QuantityLength second = null!;
+
+            Assert.ThrowsException<ArgumentNullException>(() => _service.AreEqual(first, second));
+            Assert.ThrowsException<ArgumentNullException>(() => _service.AreEqual(null!, first));
+        }
+
+        #endregion
+
+        #region Tolerance Checks
+
+        [TestMethod]
+        public void AreEqual_QuantityLength_ToleranceValues_ShouldReturnTrue()
+        {
+            var a = new QuantityLength(1.00001, LengthUnit.Feet);
+            var b = new QuantityLength(1.00002, LengthUnit.Feet);
+
+            var result = _service.AreEqual(a, b);
+
+            Assert.IsTrue(result, "Values within tolerance should be considered equal.");
+        }
+
+        #endregion
+        
+
+
     }
 }

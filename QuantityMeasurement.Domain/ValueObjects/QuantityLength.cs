@@ -109,5 +109,43 @@ namespace QuantityMeasurement.Domain.ValueObjects
         {
             return !(left == right);
         }
+
+        /// <summary> Converts the current QuantityLength instance to a specified target unit, allowing for flexible handling of length measurements in different units while maintaining the ability to perform accurate conversions and comparisons based on the underlying measurement logic encapsulated within the QuantityLength class. </summary>
+        /// <param name="targetUnit">The target unit to which the current QuantityLength instance should be converted.</param>
+        /// <returns>A new QuantityLength instance representing the converted measurement in the specified target unit.</returns>
+        /// <remarks>This method checks if the provided target unit is valid and then performs the conversion by first converting the current measurement to the base unit (feet) and then converting it to the target unit using the appropriate conversion factor, ensuring that the conversion logic is centralized within the QuantityLength class and that all conversions are performed accurately based on the defined conversion factors for each length unit.</remarks>
+        public QuantityLength ConvertTo(LengthUnit targetUnit)
+        {
+            if (!Enum.IsDefined(typeof(LengthUnit), targetUnit))
+                throw new ArgumentException("Unsupported target unit", nameof(targetUnit));
+
+            double baseValue = ToBaseUnit(); // value in feet
+            double convertedValue = baseValue / targetUnit.ToFeetFactor();
+
+            return new QuantityLength(convertedValue, targetUnit);
+        }
+
+        /// <summary> Converts a given value from a source unit to a target unit, providing a static method for performing unit conversions without needing to create an instance of QuantityLength, which can be useful for quick conversions in various parts of the application where an instance-based approach may not be necessary. </summary>
+        /// <param name="value">The value to be converted.</param>
+        /// <param name="source">The source unit of the value to be converted.</param>
+        /// <param name="target">The target unit to which the value should be converted.</param>
+        /// <returns>The converted value in the target unit.</returns>
+        /// <remarks>This method validates the input parameters to ensure that the value is finite and that the source and target units are defined in the LengthUnit enum, and then performs the conversion by first converting the value to the base unit (feet) using the source unit's conversion factor and then converting it to the target unit using the target unit's conversion factor, providing a flexible and reusable way to perform unit conversions across the application without needing to instantiate QuantityLength objects.</remarks> 
+        public static double Convert(double value, LengthUnit source, LengthUnit target)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+                throw new ArgumentException("Value must be finite.", nameof(value));
+
+            if (!Enum.IsDefined(typeof(LengthUnit), source))
+                throw new ArgumentException("Unsupported source unit.", nameof(source));
+
+            if (!Enum.IsDefined(typeof(LengthUnit), target))
+                throw new ArgumentException("Unsupported target unit.", nameof(target));
+
+            double baseValue = value * source.ToFeetFactor();
+            return baseValue / target.ToFeetFactor();
+        }
+
+        public override string ToString() => $"{Value} {Unit}";
     }
 }

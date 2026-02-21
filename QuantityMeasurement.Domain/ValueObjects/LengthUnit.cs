@@ -28,8 +28,8 @@ namespace QuantityMeasurement.Domain.ValueObjects
     {
         // Defines conversion factors from each length unit to the base unit (feet) for accurate conversions and comparisons in the QuantityLength class.
         private const double InchesToFeet = 1.0 / 12.0;               // 1 in = 1/12 ft
-        private const double YardsToFeet = 3.0;                      // 1 yd = 3 ft
-        private const double CentimetersToFeet = 0.393701 / 12.0;    // 1 cm = 0.393701 in
+        private const double YardsToFeet = 3.0;               // 1 yard = 3 feet
+        private const double CentimetersToFeet = 0.0328084;  // 1 cm ≈ 0.0328084 feet
 
         // Extension method to get the conversion factor from the specified length unit to the base unit (feet), allowing for accurate conversions and comparisons in the QuantityLength class.
         /// <param name="unit">The length unit for which to get the conversion factor to feet.</param>
@@ -44,6 +44,23 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 LengthUnit.Yards => YardsToFeet,
                 LengthUnit.Centimeters => CentimetersToFeet,
                 _ => throw new ArgumentOutOfRangeException(nameof(unit), "Unsupported length unit.")
+            };
+        }
+
+        /// <summary>
+        /// Returns the conversion factor to base unit (feet) for the specified unit.
+        /// </summary>
+        /// <param name="unit">Length unit</param>
+        /// <returns>Factor to convert to feet</returns>
+        public static double ToFeetFactor(this LengthUnit unit)
+        {
+            return unit switch
+            {
+                LengthUnit.Feet => 1.0,
+                LengthUnit.Inches => InchesToFeet,
+                LengthUnit.Yards => YardsToFeet,
+                LengthUnit.Centimeters => CentimetersToFeet,
+                _ => throw new ArgumentOutOfRangeException(nameof(unit), "Unsupported length unit")
             };
         }
     }
