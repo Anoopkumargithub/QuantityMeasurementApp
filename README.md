@@ -114,5 +114,11 @@ dotnet test
 - Ensured category type safety (Length ≠ Weight)
 - Maintained immutability and SOLID compliance
 - Architecture remains scalable for future categories
-
+-[x] UC10: refactors the system into:
+ - Single Generic Quantity<TUnit> class  
+ - IMeasurable interface abstraction  
+ - Enum-based unit behavior  
+ - Full backward compatibility (UC1–UC9)  
+ - Multi-category support (Length + Weight)  
+ - Scalable architecture  
 ---
