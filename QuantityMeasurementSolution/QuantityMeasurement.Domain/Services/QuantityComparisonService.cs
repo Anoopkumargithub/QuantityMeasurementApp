@@ -22,5 +22,19 @@ namespace QuantityMeasurement.Domain.Services
 
             return first.Equals(second);
         }
+        /// <summary>
+        /// Checks equality between two <see cref="Inches"/> values.
+        /// </summary>
+        /// <param name="first">First inches measurement.</param>
+        /// <param name="second">Second inches measurement.</param>
+        /// <returns>True if equal; otherwise false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
+        public bool AreEqual(Inches first, Inches second)
+        {
+            if (first is null) throw new ArgumentNullException(nameof(first), "First inches value cannot be null.");
+            if (second is null) throw new ArgumentNullException(nameof(second), "Second inches value cannot be null.");
+
+            return first.Equals(second);
+        }
     }
 }

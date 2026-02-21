@@ -48,5 +48,13 @@ namespace QuantityMeasurement.Tests.ValueObjects
 
             Assert.IsFalse(a.Equals(other), "Feet should not be equal to an object of a different type.");
         }
+        [TestMethod]
+        public void TryCreate_NonNumericInput_ReturnsFalse()
+        {
+            bool ok = Feet.TryCreate("abc", out Feet? feet);
+        
+            Assert.IsFalse(ok);
+            Assert.IsNull(feet);
+        }
     }
 }

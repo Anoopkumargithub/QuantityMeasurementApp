@@ -76,5 +76,25 @@ namespace QuantityMeasurement.Domain.ValueObjects
         /// </summary>
         /// <returns>Formatted string in feet.</returns>
         public override string ToString() => $"{Value} ft";
+
+        /// <summary>
+        /// Tries to create a <see cref="Feet"/> instance from user input.
+        /// </summary>
+        /// <param name="input">Raw input string.</param>
+        /// <param name="feet">The created feet value object if parsing         succeeds.</param>
+        /// <>True if numeric parsing succeeds; otherwise false.</      returns>
+        /// <remarks>
+        /// This supports UC2 requirement to validate numeric inputs.
+        /// </remarks>
+        public static bool TryCreate(string? input, out Feet? feet)
+        {
+            feet = null;
+        
+            if (!double.TryParse(input, out double value))
+                return false;
+        
+            feet = new Feet(value);
+            return true;
+        }
     }
 }

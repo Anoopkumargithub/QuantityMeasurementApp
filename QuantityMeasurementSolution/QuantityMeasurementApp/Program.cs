@@ -4,48 +4,103 @@ using QuantityMeasurement.Domain.ValueObjects;
 
 namespace QuantityMeasurementApp
 {
+    /// <summary>
+    /// Console entry point for Quantity Measurement Application.
+    /// Handles only input/output. No business logic here.
+    /// </summary>
     internal static class Program
     {
+        private static readonly QuantityComparisonService _service = new();
+
         /// <summary>
-        /// Entry point for the Quantity Measurement Console Application (UC1).
+        /// Application entry point.
         /// </summary>
         private static void Main()
         {
-            Console.WriteLine("=== Quantity Measurement Application (UC1) ===\n");
+            Console.WriteLine("=== Quantity Measurement Application ===\n");
 
-            Console.Write("Enter first value in feet: ");
-            if (!TryReadDouble(out double firstValue))
-            {
-                Console.WriteLine("Invalid input. Please enter a numeric value.");
-                return;
-            }
+            DemonstrateFeetEquality();
+            Console.WriteLine();
+            DemonstrateInchesEquality();
 
-            Console.Write("Enter second value in feet: ");
-            if (!TryReadDouble(out double secondValue))
-            {
-                Console.WriteLine("Invalid input. Please enter a numeric value.");
-                return;
-            }
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
+        }
 
-            var firstFeet = new Feet(firstValue);
-            var secondFeet = new Feet(secondValue);
+        /// <summary>
+        /// Demonstrates equality comparison for Feet values.
+        /// </summary>
+        private static void DemonstrateFeetEquality()
+        {
+            Console.WriteLine("---- FEET EQUALITY ----");
 
-            var service = new QuantityComparisonService();
-            bool result = service.AreEqual(firstFeet, secondFeet);
+            Feet? firstFeet = ReadFeet("Enter first value in feet: ");
+            if (firstFeet is null) return;
 
-            Console.WriteLine($"\nInput: {firstValue} ft and {secondValue} ft");
+            Feet? secondFeet = ReadFeet("Enter second value in feet: ");
+            if (secondFeet is null) return;
+
+            bool result = _service.AreEqual(firstFeet, secondFeet);
+
+            Console.WriteLine($"\nInput: {firstFeet.Value} ft and {secondFeet.Value} ft");
             Console.WriteLine($"Output: Equal ({result})");
         }
 
         /// <summary>
-        /// Reads a double from console safely.
+        /// Demonstrates equality comparison for Inches values.
         /// </summary>
-        /// <param name="value">Parsed double value.</param>
-        /// <returns>True if parsing succeeded; otherwise false.</returns>
-        private static bool TryReadDouble(out double value)
+        private static void DemonstrateInchesEquality()
         {
+            Console.WriteLine("---- INCHES EQUALITY ----");
+
+            Inches? firstInches = ReadInches("Enter first value in inches: ");
+            if (firstInches is null) return;
+
+            Inches? secondInches = ReadInches("Enter second value in inches: ");
+            if (secondInches is null) return;
+
+            bool result = _service.AreEqual(firstInches, secondInches);
+
+            Console.WriteLine($"\nInput: {firstInches.Value} inch and {secondInches.Value} inch");
+            Console.WriteLine($"Output: Equal ({result})");
+        }
+
+        /// <summary>
+        /// Reads and validates Feet input from console.
+        /// </summary>
+        /// <param name="message">Prompt message.</param>
+        /// <returns>Valid Feet object or null if invalid.</returns>
+        private static Feet? ReadFeet(string message)
+        {
+            Console.Write(message);
             string? input = Console.ReadLine();
-            return double.TryParse(input, out value);
+
+            if (!Feet.TryCreate(input, out Feet? feet))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return null;
+            }
+
+            return feet;
+        }
+
+        /// <summary>
+        /// Reads and validates Inches input from console.
+        /// </summary>
+        /// <param name="message">Prompt message.</param>
+        /// <returns>Valid Inches object or null if invalid.</returns>
+        private static Inches? ReadInches(string message)
+        {
+            Console.Write(message);
+            string? input = Console.ReadLine();
+
+            if (!Inches.TryCreate(input, out Inches? inches))
+            {
+                Console.WriteLine("Invalid input. Please enter a numeric value.");
+                return null;
+            }
+
+            return inches;
         }
     }
 }
