@@ -12,6 +12,9 @@ namespace QuantityMeasurement.Domain.ValueObjects
         public double Value { get; }
         public LengthUnit Unit { get; }
 
+        // Defining a small epsilon for floating-point comparison to handle precision issues in unit conversions.
+        private const double Epsilon = 1e-6;
+
         /// <summary>
         /// Initializes a new instance of QuantityLength.
         /// </summary>
@@ -37,7 +40,10 @@ namespace QuantityMeasurement.Domain.ValueObjects
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return ConvertToBase().CompareTo(other.ConvertToBase()) == 0;
+            double baseThis = Convert(Value, Unit, LengthUnit.Feet);
+            double baseOther = Convert(other.Value, other.Unit, LengthUnit.Feet);
+
+            return Math.Abs(baseThis - baseOther) < Epsilon;
         }
 
         public override bool Equals(object? obj)
@@ -58,5 +64,37 @@ namespace QuantityMeasurement.Domain.ValueObjects
 
         public override string ToString()
             => $"{Value} {Unit}";
+
+        /// <summary>
+        /// Static API to convert value between units.
+        /// </summary>
+        public static double Convert(double value, LengthUnit source,       LengthUnit target)
+        {
+            if (!double.IsFinite(value))
+                throw new ArgumentException("Value must be finite.");
+
+            if (!Enum.IsDefined(typeof(LengthUnit), source))
+                throw new ArgumentException("Invalid source unit.");
+
+            if (!Enum.IsDefined(typeof(LengthUnit), target))
+                throw new ArgumentException("Invalid target unit.");
+
+            if (source == target)
+                return value;
+
+            double result = value * 
+                (source.GetConversionFactor() / target.GetConversionFactor());
+
+            return result;
+        }
+
+        /// <summary>
+        /// Instance method conversion (returns new immutable object).
+        /// </summary>
+        public QuantityLength ConvertTo(LengthUnit target)
+        {
+            double convertedValue = Convert(Value, Unit, target);
+            return new QuantityLength(convertedValue, target);
+        }
     }
 }
