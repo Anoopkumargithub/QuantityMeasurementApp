@@ -5,92 +5,119 @@ namespace QuantityMeasurement.Domain.ValueObjects
 {
     /// <summary>
     /// Represents a generic length measurement with value and unit.
-    /// Implements DRY principle by consolidating Feet and Inches logic.
+    /// Focuses on equality and arithmetic while delegating all conversion
+    /// responsibility to <see cref="LengthUnit"/> (UC8).
     /// </summary>
     public sealed class QuantityLength : IEquatable<QuantityLength>
     {
+        /// <summary>
+        /// Gets the numeric value of the quantity.
+        /// </summary>
         public double Value { get; }
+
+        /// <summary>
+        /// Gets the unit type of the quantity.
+        /// </summary>
         public LengthUnit Unit { get; }
 
-        // Defining a small epsilon for floating-point comparison to handle precision issues in unit conversions.
+        /// <summary>
+        /// Epsilon used for floating-point comparisons.
+        /// </summary>
         private const double Epsilon = 1e-6;
 
         /// <summary>
-        /// Initializes a new instance of QuantityLength.
+        /// Initializes a new instance of <see cref="QuantityLength"/>.
         /// </summary>
+        /// <param name="value">Numeric value.</param>
+        /// <param name="unit">Length unit.</param>
+        /// <exception cref="ArgumentException">Thrown when value is NaN/Infinity.</exception>
         public QuantityLength(double value, LengthUnit unit)
         {
+            if (!double.IsFinite(value))
+                throw new ArgumentException("Value must be a finite number.", nameof(value));
+
+            // LengthUnit is an enum, so it can't be null, but invalid cast values can exist.
+            if (!Enum.IsDefined(typeof(LengthUnit), unit))
+                throw new ArgumentException("Invalid unit.", nameof(unit));
+
             Value = value;
             Unit = unit;
         }
 
         /// <summary>
-        /// Converts the quantity to base unit (Feet).
+        /// Converts current value to base unit (Feet) using the unit conversion responsibility.
         /// </summary>
-        private double ConvertToBase()
+        /// <returns>Value converted to base unit (Feet).</returns>
+        private double ToBaseFeet()
         {
-            return Value * Unit.GetConversionFactor();
+            return Unit.ConvertToBaseUnit(Value);
         }
 
         /// <summary>
-        /// Value-based equality comparison using base conversion.
+        /// Checks value-based equality using base-unit comparison.
         /// </summary>
+        /// <param name="other">Other quantity.</param>
+        /// <returns>True if both are equal within epsilon; otherwise false.</returns>
         public bool Equals(QuantityLength? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            double baseThis = Convert(Value, Unit, LengthUnit.Feet);
-            double baseOther = Convert(other.Value, other.Unit, LengthUnit.Feet);
+            double baseThis = Unit.ConvertToBaseUnit(Value);
+            double baseOther = other.Unit.ConvertToBaseUnit(other.Value);
 
             return Math.Abs(baseThis - baseOther) < Epsilon;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is QuantityLength other && Equals(other);
-        }
+        /// <inheritdoc/>
+        public override bool Equals(object? obj) => obj is QuantityLength other && Equals(other);
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return ConvertToBase().GetHashCode();
+            // Hash based on base-unit value to keep consistent across units.
+            return ToBaseFeet().GetHashCode();
         }
 
-        public static bool operator ==(QuantityLength? left, QuantityLength? right)
-            => Equals(left, right);
+        public static bool operator ==(QuantityLength? left, QuantityLength? right) => Equals(left, right);
+        public static bool operator !=(QuantityLength? left, QuantityLength? right) => !Equals(left, right);
 
-        public static bool operator !=(QuantityLength? left, QuantityLength? right)
-            => !Equals(left, right);
-
-        public override string ToString()
-            => $"{Value} {Unit}";
+        /// <inheritdoc/>
+        public override string ToString() => $"{Value} {Unit}";
 
         /// <summary>
-        /// Static API to convert value between units.
+        /// Converts a numeric value between units using UC8 unit responsibility:
+        /// source converts to base, target converts from base.
         /// </summary>
-        public static double Convert(double value, LengthUnit source,       LengthUnit target)
+        /// <param name="value">Value to convert.</param>
+        /// <param name="source">Source unit.</param>
+        /// <param name="target">Target unit.</param>
+        /// <returns>Converted value in target unit.</returns>
+        /// <exception cref="ArgumentException">Thrown when value is NaN/Infinity or units are invalid.</exception>
+        public static double Convert(double value, LengthUnit source, LengthUnit target)
         {
             if (!double.IsFinite(value))
-                throw new ArgumentException("Value must be finite.");
+                throw new ArgumentException("Value must be finite.", nameof(value));
 
             if (!Enum.IsDefined(typeof(LengthUnit), source))
-                throw new ArgumentException("Invalid source unit.");
+                throw new ArgumentException("Invalid source unit.", nameof(source));
 
             if (!Enum.IsDefined(typeof(LengthUnit), target))
-                throw new ArgumentException("Invalid target unit.");
+                throw new ArgumentException("Invalid target unit.", nameof(target));
 
             if (source == target)
                 return value;
 
-            double result = value * 
-                (source.GetConversionFactor() / target.GetConversionFactor());
-
-            return result;
+            // UC8: delegate conversions to unit methods.
+            double baseFeet = source.ConvertToBaseUnit(value);
+            return target.ConvertFromBaseUnit(baseFeet);
         }
 
         /// <summary>
-        /// Instance method conversion (returns new immutable object).
+        /// Converts this quantity to the specified target unit.
         /// </summary>
+        /// <param name="target">Target unit.</param>
+        /// <returns>New immutable quantity in target unit.</returns>
         public QuantityLength ConvertTo(LengthUnit target)
         {
             double convertedValue = Convert(Value, Unit, target);
@@ -98,60 +125,47 @@ namespace QuantityMeasurement.Domain.ValueObjects
         }
 
         /// <summary>
-        /// Adds another QuantityLength to the current instance.
-        /// Result is returned in the unit of the first operand.
+        /// Adds another quantity to the current instance.
+        /// Result is returned in the unit of the first operand (UC6).
         /// </summary>
-        /// <param name="other">The second QuantityLength.</param>
-        /// <returns>New QuantityLength with summed value.</returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
+        /// <param name="other">The second quantity.</param>
+        /// <returns>New quantity in the first operand's unit.</returns>
         public QuantityLength Add(QuantityLength other)
         {
             if (other is null)
-                throw new ArgumentNullException(nameof(other));
-        
-            if (!double.IsFinite(Value) || !double.IsFinite(other.Value))
-                throw new ArgumentException("Values must be finite numbers.");
-        
+                throw new ArgumentNullException(nameof(other), "Second quantity cannot be null.");
+
             // Convert both to base unit (Feet)
-            double baseThis = Convert(Value, Unit, LengthUnit.Feet);
-            double baseOther = Convert(other.Value, other.Unit, LengthUnit.Feet);
-        
-            // Add in base unit
+            double baseThis = Unit.ConvertToBaseUnit(Value);
+            double baseOther = other.Unit.ConvertToBaseUnit(other.Value);
+
             double baseSum = baseThis + baseOther;
-        
-            // Convert back to unit of first operand
-            double resultValue = Convert(baseSum, LengthUnit.Feet, Unit);
-        
+
+            // Convert back to first operand unit
+            double resultValue = Unit.ConvertFromBaseUnit(baseSum);
+
             return new QuantityLength(resultValue, Unit);
         }
-        
+
         /// <summary>
-        /// Static overload for addition.
+        /// Static overload: adds two quantities, returning result in the unit of the first operand.
         /// </summary>
-        public static QuantityLength Add(
-            QuantityLength first,
-            QuantityLength second)
+        public static QuantityLength Add(QuantityLength first, QuantityLength second)
         {
             if (first is null)
                 throw new ArgumentNullException(nameof(first));
-        
+
             return first.Add(second);
         }
 
         /// <summary>
-        /// Adds two QuantityLength objects and returns result in explicitly specified target unit.
+        /// Adds two quantities and returns result in an explicitly specified target unit (UC7).
         /// </summary>
         /// <param name="first">First operand.</param>
         /// <param name="second">Second operand.</param>
         /// <param name="targetUnit">Explicit result unit.</param>
-        /// <returns>New QuantityLength in target unit.</returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public static QuantityLength Add(
-            QuantityLength first,
-            QuantityLength second,
-            LengthUnit targetUnit)
+        /// <returns>New quantity in target unit.</returns>
+        public static QuantityLength Add(QuantityLength first, QuantityLength second, LengthUnit targetUnit)
         {
             if (first is null)
                 throw new ArgumentNullException(nameof(first));
@@ -160,20 +174,14 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 throw new ArgumentNullException(nameof(second));
 
             if (!Enum.IsDefined(typeof(LengthUnit), targetUnit))
-                throw new ArgumentException("Invalid target unit.");
+                throw new ArgumentException("Invalid target unit.", nameof(targetUnit));
 
-            if (!double.IsFinite(first.Value) || !double.IsFinite(second.Value))
-                throw new ArgumentException("Values must be finite numbers.");
+            double baseFirst = first.Unit.ConvertToBaseUnit(first.Value);
+            double baseSecond = second.Unit.ConvertToBaseUnit(second.Value);
 
-            // Convert both to base unit (Feet)
-            double baseFirst = Convert(first.Value, first.Unit, LengthUnit.Feet);
-            double baseSecond = Convert(second.Value, second.Unit, LengthUnit.Feet);
-
-            // Add in base
             double baseSum = baseFirst + baseSecond;
 
-            // Convert to explicit target unit
-            double finalValue = Convert(baseSum, LengthUnit.Feet, targetUnit);
+            double finalValue = targetUnit.ConvertFromBaseUnit(baseSum);
 
             return new QuantityLength(finalValue, targetUnit);
         }
