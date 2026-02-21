@@ -24,6 +24,7 @@ This project demonstrates:
 - Full unit test coverage using MSTest
 - Immutable domain modeling
 - Cross-unit comparison support (UC4 Enhancement)
+- Centralized comparison service with full unit test coverage (UC5)
 
 ---
 
@@ -36,6 +37,7 @@ QuantityMeasurementSolution
 ├── QuantityMeasurement.Domain → Core Business Logic (Domain Layer)
 └── QuantityMeasurement.Tests → MSTest Unit Tests
 ```
+
 
 ### Layer Responsibilities
 
@@ -54,6 +56,7 @@ QuantityMeasurementSolution
 - Enforces immutability
 - Performs validation
 - Handles cross-unit conversion logic (UC4)
+- Provides centralized comparison methods with null checks (UC5)
 
 ### 🔹 Test Layer
 - Provides full MSTest coverage
@@ -61,6 +64,7 @@ QuantityMeasurementSolution
 - Ensures null and edge-case handling
 - Protects backward compatibility
 - Validates cross-unit behavior (UC4)
+- Validates QuantityComparisonService behavior (UC5)
 
 ---
 
@@ -135,6 +139,8 @@ Features:
 - Eliminates magic numbers
 - Enables scalable addition of new units
 
+---
+
 ### 5️⃣ UC4 – Cross Unit Equality Enhancement
 
 UC4 enables full comparison between different measurement units.
@@ -156,6 +162,12 @@ Enhancements:
 
 ---
 
+### 6️⃣ UC5 – QuantityComparisonService Enhancement
+
+Centralized domain service to compare measurements.
+
+---
+
 ## 🔧 Domain Service — QuantityComparisonService
 
 Location:  
@@ -165,9 +177,10 @@ Responsibilities:
 
 - Compares two `Feet` objects
 - Compares two `Inches` objects
-- Compares two `QuantityLength` objects (UC3)
+- Compares two `QuantityLength` objects
 - Validates null inputs
-- Centralizes comparison logic
+- Supports cross-unit comparisons
+- Provides centralized comparison logic
 - Preserves equality contract
 - Maintains backward compatibility
 
@@ -179,11 +192,21 @@ AreEqual(Inches first, Inches second)
 AreEqual(QuantityLength first, QuantityLength second)
 ```
 
-Additional UC4 Capability:
 
-- Compares different units transparently
-- Example: `AreEqual(1 Foot, 12 Inches)` returns True
-- Centralizes all conversion-aware comparison logic
+Features:
+
+- Throws `ArgumentNullException` for null parameters
+- Handles tolerance-based equality internally
+- Supports cross-unit comparisons transparently
+- Fully tested with MSTest (UC5 Tests)
+
+Example:
+```csharp
+AreEqual(1 Foot, 12 Inches) → True
+AreEqual(2 Feet, 24 Inches) → True
+AreEqual(1 Foot, 10 Inches) → False
+```
+
 
 ---
 
@@ -194,6 +217,7 @@ The application now demonstrates:
 - Feet equality check
 - Inches equality check
 - Cross-unit equality check (UC4)
+- Service-based comparisons (UC5)
 
 Example:
 === Quantity Measurement Application ===
@@ -226,30 +250,26 @@ Location:
 - Operator overload validation
 - HashCode consistency validation
 - Tolerance-based floating comparison
-- Cross-unit equality validation (UC3)
+- Cross-unit equality validation (UC3 & UC4)
+- QuantityComparisonService tests (UC5)
 - CompareTo behavior validation
 - Backward compatibility verification
-- 1 Foot equals 12 Inches
-- 2 Feet equals 24 Inches
-- Cross-unit inequality validation
-- HashCode consistency across units
-- CompareTo cross-unit validation
-- Backward compatibility confirmation
 
-All UC1, UC2, UC3, and UC4 features include full test coverage to ensure production-grade reliability.
+All UC1 through UC5 features include full test coverage to ensure production-grade reliability.
 
 ---
 
-## ⚠ UC4 Enhancement Summary
+## ⚠ UC5 Enhancement Summary
 
-UC4 improves the system by:
+UC5 improves the system by:
 
-- Enabling seamless comparison between different units
-- Centralizing conversion logic
-- Preserving immutability
+- Providing a centralized comparison service
+- Supporting Feet, Inches, and QuantityLength objects
+- Enabling cross-unit comparisons transparently
+- Handling null and invalid inputs safely
 - Maintaining strict equality contracts
-- Ensuring zero architectural compromise
-- Supporting future scalability for additional units
+- Supporting tolerance-based comparisons
+- Fully covered with unit tests for reliability
 
 ---
 
@@ -259,6 +279,7 @@ UC4 improves the system by:
 ```
 dotnet build
 ```
+
 
 ### Run Console Application
 ```
@@ -289,3 +310,4 @@ dotnet test
 - Maintaining backward compatibility while extending features
 - Writing conversion-aware equality logic
 - Architecting extensible domain models
+- Centralizing comparison logic for production-grade reliability
