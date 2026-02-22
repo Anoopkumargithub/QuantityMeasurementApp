@@ -16,6 +16,7 @@ namespace QuantityMeasurementApp
 
             Console.WriteLine("1. Length Operations");
             Console.WriteLine("2. Weight Operations");
+            Console.WriteLine("3. Volume Operations");
             Console.Write("\nChoose category: ");
 
             string? category = Console.ReadLine();
@@ -28,6 +29,9 @@ namespace QuantityMeasurementApp
                 case "2":
                     HandleWeightOperations();
                     break;
+                case "3":
+                    HandleVolumeOperations();
+                    break; 
                 default:
                     Console.WriteLine("Invalid category.");
                     break;
@@ -173,6 +177,69 @@ namespace QuantityMeasurementApp
             }
         }
 
+        // ================= VOLUME =================
+        private static void HandleVolumeOperations()
+       {
+           Console.WriteLine("\n1. Equality");
+           Console.WriteLine("2. Conversion");
+           Console.WriteLine("3. Addition");
+           Console.WriteLine("4. Addition with Target Unit");
+           Console.Write("Choose operation: ");
+       
+           string? choice = Console.ReadLine();
+       
+           switch (choice)
+           {
+               case "1":
+                   var v1 = ReadQuantity<VolumeUnit>("Enter first volume");
+                   var v2 = ReadQuantity<VolumeUnit>("Enter second volume");
+       
+                   if (v1 == null || v2 == null) return;
+       
+                   Console.WriteLine($"\nEqual: {v1.Equals(v2)}");
+                   break;
+       
+               case "2":
+                   var volume = ReadQuantity<VolumeUnit>("Enter volume to convert");
+                   if (volume == null) return;
+       
+                   Console.Write("Target unit (Litre/Millilitre/Gallon): ");
+                   if (!Enum.TryParse(Console.ReadLine(), true, out VolumeUnit target))
+                   {
+                       Console.WriteLine("Invalid unit.");
+                       return;
+                   }
+       
+                   Console.WriteLine($"\nConverted: {volume.ConvertTo(target)}");
+                   break;
+       
+               case "3":
+                   var a = ReadQuantity<VolumeUnit>("Enter first volume");
+                   var b = ReadQuantity<VolumeUnit>("Enter second volume");
+       
+                   if (a == null || b == null) return;
+       
+                   Console.WriteLine($"\nResult: {a.Add(b)}");
+                   break;
+       
+               case "4":
+                   var x = ReadQuantity<VolumeUnit>("Enter first volume");
+                   var y = ReadQuantity<VolumeUnit>("Enter second volume");
+       
+                   if (x == null || y == null) return;
+       
+                   Console.Write("Target unit (Litre/Millilitre/Gallon): ");
+                   if (!Enum.TryParse(Console.ReadLine(), true, out VolumeUnit targetAdd))
+                   {
+                       Console.WriteLine("Invalid unit.");
+                       return;
+                   }
+       
+                   Console.WriteLine($"\nResult: {x.Add(y, targetAdd)}");
+                   break;
+           }
+       }
+
         // ================= GENERIC INPUT =================
 
         private static Quantity<TUnit>? ReadQuantity<TUnit>(string label)
@@ -195,9 +262,13 @@ namespace QuantityMeasurementApp
             {
                 Console.Write("Enter unit (Gram/Kilogram/Pound/Tonne): ");
             }
+            else if (typeof(TUnit) == typeof(VolumeUnit))
+            {
+                Console.Write("Enter unit (Litre/Millilitre/Gallon): ");
+            }
             else{
                 Console.WriteLine("Unsupported unit type.");
-                creturn null;
+                return null;
             }
             Console.Write("Enter unit: ");
             if (!Enum.TryParse(Console.ReadLine(), true, out TUnit unit))

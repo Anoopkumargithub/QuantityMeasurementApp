@@ -29,6 +29,19 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 return UnitConversionService.ConvertWeightToBase(
                     Value, (WeightUnit)(object)Unit);
 
+            if (typeof(TUnit) == typeof(VolumeUnit))
+            {
+                var unit = (VolumeUnit)(object)Unit;
+            
+                return unit switch
+                {
+                    VolumeUnit.Litre => Value,
+                    VolumeUnit.Millilitre => Value * 0.001,
+                    VolumeUnit.Gallon => Value * 3.78541,
+                    _ => throw new ArgumentException("Invalid VolumeUnit")
+                };
+            }
+
             throw new InvalidOperationException("Unsupported unit type.");
         }
 
@@ -49,6 +62,21 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 double result = baseSum; // already base = Gram
                 return new Quantity<TUnit>(result, Unit);
             }
+
+            if (typeof(TUnit) == typeof(VolumeUnit))
+           {
+               var unit = (VolumeUnit)(object)Unit;
+           
+               double result = unit switch
+               {
+                   VolumeUnit.Litre => baseSum,
+                   VolumeUnit.Millilitre => baseSum / 0.001,
+                   VolumeUnit.Gallon => baseSum / 3.78541,
+                   _ => throw new ArgumentException("Invalid VolumeUnit")
+               };
+           
+               return new Quantity<TUnit>(result, Unit);
+           }
 
             throw new InvalidOperationException();
         }
@@ -93,6 +121,21 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 return new Quantity<TUnit>(result, targetUnit);
             }
 
+            if (typeof(TUnit) == typeof(VolumeUnit))
+           {
+               var unit = (VolumeUnit)(object)targetUnit;
+           
+               double result = unit switch
+               {
+                   VolumeUnit.Litre => baseSum,
+                   VolumeUnit.Millilitre => baseSum / 0.001,
+                   VolumeUnit.Gallon => baseSum / 3.78541,
+                   _ => throw new ArgumentException("Invalid VolumeUnit")
+               };
+           
+               return new Quantity<TUnit>(result, targetUnit);
+           }
+
             throw new InvalidOperationException("Unsupported unit type.");
         }
 
@@ -131,6 +174,21 @@ namespace QuantityMeasurement.Domain.ValueObjects
 
                 return new Quantity<TUnit>(result, targetUnit);
             }
+
+            if (typeof(TUnit) == typeof(VolumeUnit))
+           {
+               var unit = (VolumeUnit)(object)targetUnit;
+           
+               double result = unit switch
+               {
+                   VolumeUnit.Litre => baseValue,
+                   VolumeUnit.Millilitre => baseValue / 0.001,
+                   VolumeUnit.Gallon => baseValue / 3.78541,
+                   _ => throw new ArgumentException("Invalid VolumeUnit")
+               };
+           
+               return new Quantity<TUnit>(result, targetUnit);
+           }
 
             throw new InvalidOperationException("Unsupported unit type.");
         }

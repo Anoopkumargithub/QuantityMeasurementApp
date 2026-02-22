@@ -37,5 +37,24 @@ namespace QuantityMeasurement.Tests
 
             Assert.AreEqual(2.0, result.Value, Epsilon);
         }
+
+        [TestMethod]
+        public void VolumeEquality_LitreToMillilitre()
+        {
+            var a = new Quantity<VolumeUnit>(1.0, VolumeUnit.Litre);
+            var b = new Quantity<VolumeUnit>(1000.0, VolumeUnit.Millilitre);
+        
+            Assert.IsTrue(a.Equals(b));
+        }
+        
+        [TestMethod]
+        public void VolumeConversion_LitreToGallon()
+        {
+            var a = new Quantity<VolumeUnit>(3.78541, VolumeUnit.Litre);
+        
+            var result = a.ConvertTo(VolumeUnit.Gallon);
+        
+            Assert.AreEqual(1.0, result.Value, 1e-3);
+        }
     }
 }
