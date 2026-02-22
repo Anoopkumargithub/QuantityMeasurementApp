@@ -120,5 +120,13 @@ dotnet test
  - Enum-based unit behavior  
  - Full backward compatibility (UC1–UC9)  
  - Multi-category support (Length + Weight)  
- - Scalable architecture  
+ - Scalable architecture
+-[x] UC11: Added Volume Measurement Support
+ - Introduced VolumeUnit enum (Litre, Millilitre, Gallon)
+ - Implemented base-unit conversion logic for volume
+ - Enabled equality, conversion, and addition operations for volume
+ - Preserved backward compatibility with UC1–UC10
+ - Validated scalability of Quantity<TUnit> generic design
+ - Confirmed Open-Closed Principle compliance
+ - Added volume unit test coverage
 ---
