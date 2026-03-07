@@ -129,4 +129,29 @@ dotnet test
  - Validated scalability of Quantity<TUnit> generic design
  - Confirmed Open-Closed Principle compliance
  - Added volume unit test coverage
+- [x] UC12: Added Subtraction and Division Operations
+  - Implemented `Subtract()` with implicit target unit support
+  - Implemented `Subtract(other, targetUnit)` with explicit target unit support
+  - Implemented `Divide()` returning a dimensionless scalar result
+  - Added divide-by-zero protection and consistent validation
+  - Enabled subtraction and division across Length, Weight, and Volume
+  - Preserved immutability of original quantity objects
+  - Added MSTest coverage for arithmetic edge cases and non-commutative behavior
+
+- [x] UC13: Centralized Arithmetic Logic to Enforce DRY
+  - Refactored `Quantity<TUnit>` to centralize arithmetic execution logic
+  - Added shared operand validation for arithmetic methods
+  - Reduced duplication across Add, Subtract, and Divide implementations
+  - Preserved UC12 public API and behavior after refactoring
+  - Improved maintainability and readability of arithmetic operations
+  - Added regression-style MSTest validation for backward compatibility
+
+- [x] UC14: Added Temperature Measurement Support with Selective Arithmetic
+  - Introduced `TemperatureUnit` enum (Celsius, Fahrenheit, Kelvin)
+  - Implemented non-linear temperature conversion using Celsius as base unit
+  - Enabled equality and conversion operations for temperature quantities
+  - Explicitly rejected unsupported arithmetic on absolute temperature values
+  - Preserved backward compatibility for Length, Weight, and Volume categories
+  - Extended console application to support Temperature operations
+  - Added MSTest coverage for temperature equality, conversion, and unsupported arithmetic handling
 ---
