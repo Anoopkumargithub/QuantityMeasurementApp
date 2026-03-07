@@ -23,111 +23,18 @@ namespace QuantityMeasurement.Domain.ValueObjects
             Unit = unit;
         }
 
-        public Quantity<TUnit> ConvertTo(TUnit targetUnit)
+        private static bool IsTemperatureUnit()
         {
-            ValidateTargetUnit(targetUnit);
-
-            double baseValue = ToBaseUnit();
-            double converted = FromBaseUnit(baseValue, targetUnit);
-
-            return new Quantity<TUnit>(converted, targetUnit);
+            return typeof(TUnit) == typeof(TemperatureUnit);
         }
 
-        public Quantity<TUnit> Add(Quantity<TUnit> other)
+        private static void ValidateOperationSupport(string operation)
         {
-            return Add(other, Unit);
-        }
-
-        public Quantity<TUnit> Add(Quantity<TUnit> other, TUnit targetUnit)
-        {
-            ValidateArithmeticOperands(other, targetUnit, true);
-
-            double baseResult = PerformBaseArithmetic(other, ArithmeticOperation.Add);
-            double converted = FromBaseUnit(baseResult, targetUnit);
-
-            return new Quantity<TUnit>(RoundToTwoDecimals(converted), targetUnit);
-        }
-
-        public Quantity<TUnit> Subtract(Quantity<TUnit> other)
-        {
-            return Subtract(other, Unit);
-        }
-
-        public Quantity<TUnit> Subtract(Quantity<TUnit> other, TUnit targetUnit)
-        {
-            ValidateArithmeticOperands(other, targetUnit, true);
-
-            double baseResult = PerformBaseArithmetic(other, ArithmeticOperation.Subtract);
-            double converted = FromBaseUnit(baseResult, targetUnit);
-
-            return new Quantity<TUnit>(RoundToTwoDecimals(converted), targetUnit);
-        }
-
-        public double Divide(Quantity<TUnit> other)
-        {
-            ValidateArithmeticOperands(other, default, false);
-
-            return PerformBaseArithmetic(other, ArithmeticOperation.Divide);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is not Quantity<TUnit> other)
-                return false;
-
-            return Math.Abs(ToBaseUnit() - other.ToBaseUnit()) < Epsilon;
-        }
-
-        public override int GetHashCode()
-        {
-            return ToBaseUnit().GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return $"{Value} {Unit}";
-        }
-
-        private void ValidateArithmeticOperands(
-            Quantity<TUnit>? other,
-            TUnit targetUnit,
-            bool targetUnitRequired)
-        {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other), "Other quantity cannot be null.");
-
-            if (!double.IsFinite(Value))
-                throw new ArgumentException("Current quantity value must be finite.");
-
-            if (!double.IsFinite(other.Value))
-                throw new ArgumentException("Other quantity value must be finite.");
-
-            if (targetUnitRequired)
-                ValidateTargetUnit(targetUnit);
-        }
-
-        private void ValidateTargetUnit(TUnit targetUnit)
-        {
-            if (!Enum.IsDefined(typeof(TUnit), targetUnit))
-                throw new ArgumentException("Invalid target unit.", nameof(targetUnit));
-        }
-
-        private double PerformBaseArithmetic(
-            Quantity<TUnit> other,
-            ArithmeticOperation operation)
-        {
-            double thisBase = ToBaseUnit();
-            double otherBase = other.ToBaseUnit();
-
-            return operation switch
+            if (IsTemperatureUnit())
             {
-                ArithmeticOperation.Add => thisBase + otherBase,
-                ArithmeticOperation.Subtract => thisBase - otherBase,
-                ArithmeticOperation.Divide => Math.Abs(otherBase) < Epsilon
-                    ? throw new ArithmeticException("Cannot divide by zero.")
-                    : thisBase / otherBase,
-                _ => throw new InvalidOperationException("Unsupported arithmetic operation.")
-            };
+                throw new NotSupportedException(
+                    $"Temperature does not support {operation} operation on absolute values.");
+            }
         }
 
         private double ToBaseUnit()
@@ -154,6 +61,20 @@ namespace QuantityMeasurement.Domain.ValueObjects
                     VolumeUnit.Millilitre => Value * 0.001,
                     VolumeUnit.Gallon => Value * 3.78541,
                     _ => throw new ArgumentException("Invalid VolumeUnit.")
+                };
+            }
+
+            if (typeof(TUnit) == typeof(TemperatureUnit))
+            {
+                var unit = (TemperatureUnit)(object)Unit;
+
+                // Base unit: Celsius
+                return unit switch
+                {
+                    TemperatureUnit.Celsius => Value,
+                    TemperatureUnit.Fahrenheit => (Value - 32.0) * 5.0 / 9.0,
+                    TemperatureUnit.Kelvin => Value - 273.15,
+                    _ => throw new ArgumentException("Invalid TemperatureUnit.")
                 };
             }
 
@@ -203,6 +124,20 @@ namespace QuantityMeasurement.Domain.ValueObjects
                 };
             }
 
+            if (typeof(TUnit) == typeof(TemperatureUnit))
+            {
+                var unit = (TemperatureUnit)(object)targetUnit;
+
+                // Base unit: Celsius
+                return unit switch
+                {
+                    TemperatureUnit.Celsius => baseValue,
+                    TemperatureUnit.Fahrenheit => (baseValue * 9.0 / 5.0) + 32.0,
+                    TemperatureUnit.Kelvin => baseValue + 273.15,
+                    _ => throw new ArgumentException("Invalid TemperatureUnit.")
+                };
+            }
+
             throw new InvalidOperationException("Unsupported unit type.");
         }
 
@@ -211,11 +146,96 @@ namespace QuantityMeasurement.Domain.ValueObjects
             return Math.Round(value, 2, MidpointRounding.AwayFromZero);
         }
 
-        private enum ArithmeticOperation
+        public Quantity<TUnit> ConvertTo(TUnit targetUnit)
         {
-            Add,
-            Subtract,
-            Divide
+            if (!Enum.IsDefined(typeof(TUnit), targetUnit))
+                throw new ArgumentException("Invalid target unit.", nameof(targetUnit));
+
+            double baseValue = ToBaseUnit();
+            double result = FromBaseUnit(baseValue, targetUnit);
+
+            // UC14 expects temperature conversion output to be rounded consistently.
+            if (IsTemperatureUnit())
+                result = RoundToTwoDecimals(result);
+
+            return new Quantity<TUnit>(result, targetUnit);
+        }
+
+        public Quantity<TUnit> Add(Quantity<TUnit> other)
+        {
+            return Add(other, Unit);
+        }
+
+        public Quantity<TUnit> Add(Quantity<TUnit> other, TUnit targetUnit)
+        {
+            ValidateOperationSupport("addition");
+
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            double baseSum = ToBaseUnit() + other.ToBaseUnit();
+            double result = FromBaseUnit(baseSum, targetUnit);
+
+            return new Quantity<TUnit>(result, targetUnit);
+        }
+
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other)
+        {
+            return Subtract(other, Unit);
+        }
+
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other, TUnit targetUnit)
+        {
+            ValidateOperationSupport("subtraction");
+
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            if (!double.IsFinite(other.Value))
+                throw new ArgumentException("Other value must be finite.", nameof(other));
+
+            double diffBase = ToBaseUnit() - other.ToBaseUnit();
+            double converted = FromBaseUnit(diffBase, targetUnit);
+            double rounded = RoundToTwoDecimals(converted);
+
+            return new Quantity<TUnit>(rounded, targetUnit);
+        }
+
+        public double Divide(Quantity<TUnit> other)
+        {
+            ValidateOperationSupport("division");
+
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            if (!double.IsFinite(other.Value))
+                throw new ArgumentException("Other value must be finite.", nameof(other));
+
+            double denominatorBase = other.ToBaseUnit();
+
+            if (Math.Abs(denominatorBase) < Epsilon)
+                throw new DivideByZeroException("Cannot divide by a zero quantity.");
+
+            double numeratorBase = ToBaseUnit();
+            return numeratorBase / denominatorBase;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Quantity<TUnit> other)
+                return false;
+
+            return Math.Abs(ToBaseUnit() - other.ToBaseUnit()) < Epsilon;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToBaseUnit().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Value} {Unit}";
         }
     }
 }

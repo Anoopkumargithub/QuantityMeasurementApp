@@ -6,17 +6,18 @@ namespace QuantityMeasurementApp
 {
     /// <summary>
     /// Console entry point for Quantity Measurement Application.
-    /// Supports Length, Weight, and Volume operations using generic Quantity<TUnit>.
+    /// Supports Length, Weight, Volume and Temperature operations using generic Quantity<TUnit>.
     /// </summary>
     internal static class Program
     {
         private static void Main()
         {
-            Console.WriteLine("=== Quantity Measurement Application (UC12) ===\n");
+            Console.WriteLine("=== Quantity Measurement Application (UC14) ===\n");
 
             Console.WriteLine("1. Length Operations");
             Console.WriteLine("2. Weight Operations");
             Console.WriteLine("3. Volume Operations");
+            Console.WriteLine("4. Temperature Operations");
             Console.Write("\nChoose category: ");
 
             string? category = Console.ReadLine();
@@ -31,6 +32,9 @@ namespace QuantityMeasurementApp
                     break;
                 case "3":
                     HandleVolumeOperations();
+                    break;
+                case "4":
+                    HandleTemperatureOperations();
                     break;
                 default:
                     Console.WriteLine("Invalid category.");
@@ -63,7 +67,7 @@ namespace QuantityMeasurementApp
                         var l2 = ReadQuantity<LengthUnit>("Enter second length");
 
                         if (l1 == null || l2 == null) return;
-
+                        
                         Console.WriteLine($"\nEqual: {l1.Equals(l2)}");
                         break;
                     }
@@ -193,7 +197,7 @@ namespace QuantityMeasurementApp
                         var w2 = ReadQuantity<WeightUnit>("Enter second weight");
 
                         if (w1 == null || w2 == null) return;
-
+                        
                         Console.WriteLine($"\nEqual: {w1.Equals(w2)}");
                         break;
                     }
@@ -424,6 +428,117 @@ namespace QuantityMeasurementApp
 
                         break;
                     }
+                default:
+                    Console.WriteLine("Invalid operation.");
+                    break;
+            }
+        }
+
+        // ================= TEMPERATURE =================
+
+        private static void HandleTemperatureOperations()
+        {
+            Console.WriteLine("\n1. Equality");
+            Console.WriteLine("2. Conversion");
+            Console.WriteLine("3. Addition (Unsupported)");
+            Console.WriteLine("4. Subtraction (Unsupported)");
+            Console.WriteLine("5. Division (Unsupported)");
+            Console.Write("Choose operation: ");
+
+            string? choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    {
+                        var t1 = ReadQuantity<TemperatureUnit>("Enter first temperature");
+                        var t2 = ReadQuantity<TemperatureUnit>("Enter second temperature");
+
+                        if (t1 == null || t2 == null) return;
+                        Console.WriteLine($"\nEqual: {t1.Equals(t2)}");
+                        break;
+                    }
+
+                case "2":
+                    {
+                        var temp = ReadQuantity<TemperatureUnit>("Enter temperature to convert");
+                        if (temp == null) return;
+
+                        Console.Write("Target unit (Celsius/Fahrenheit/Kelvin): ");
+                        if (!Enum.TryParse(Console.ReadLine(), true, out TemperatureUnit targetTemp))
+                        {
+                            Console.WriteLine("Invalid unit.");
+                            return;
+                        }
+
+                        try
+                        {
+                            Console.WriteLine($"\nConverted: {temp.ConvertTo(targetTemp)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Conversion failed: {ex.Message}");
+                        }
+
+                        break;
+                    }
+
+                case "3":
+                    {
+                        var t1 = ReadQuantity<TemperatureUnit>("Enter first temperature");
+                        var t2 = ReadQuantity<TemperatureUnit>("Enter second temperature");
+
+                        if (t1 == null || t2 == null) return;
+
+                        try
+                        {
+                            Console.WriteLine($"\nResult: {t1.Add(t2)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Addition failed: {ex.Message}");
+                        }
+
+                        break;
+                    }
+
+                case "4":
+                    {
+                        var t1 = ReadQuantity<TemperatureUnit>("Enter first temperature");
+                        var t2 = ReadQuantity<TemperatureUnit>("Enter second temperature");
+
+                        if (t1 == null || t2 == null) return;
+
+                        try
+                        {
+                            Console.WriteLine($"\nResult: {t1.Subtract(t2)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Subtraction failed: {ex.Message}");
+                        }
+
+                        break;
+                    }
+
+                case "5":
+                    {
+                        var t1 = ReadQuantity<TemperatureUnit>("Enter dividend temperature");
+                        var t2 = ReadQuantity<TemperatureUnit>("Enter divisor temperature");
+
+                        if (t1 == null || t2 == null) return;
+
+                        try
+                        {
+                            Console.WriteLine($"\nRatio: {t1.Divide(t2)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Division failed: {ex.Message}");
+                        }
+
+                        break;
+                    }
 
                 default:
                     Console.WriteLine("Invalid operation.");
@@ -457,11 +572,16 @@ namespace QuantityMeasurementApp
             {
                 Console.Write("Enter unit (Litre/Millilitre/Gallon): ");
             }
+            else if (typeof(TUnit) == typeof(TemperatureUnit))
+            {
+                Console.Write("Enter unit (Celsius/Fahrenheit/Kelvin): ");
+            }
             else
             {
                 Console.WriteLine("Unsupported unit type.");
                 return null;
             }
+
             if (!Enum.TryParse(Console.ReadLine(), true, out TUnit unit))
             {
                 Console.WriteLine("Invalid unit.");
