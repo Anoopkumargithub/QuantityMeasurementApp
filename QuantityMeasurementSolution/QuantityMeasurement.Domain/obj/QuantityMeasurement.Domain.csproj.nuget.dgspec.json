@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj": {}
+    "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj": {}
   },
   "projects": {
-    "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj": {
+    "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj",
+        "projectUniqueName": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj",
         "projectName": "QuantityMeasurement.Domain",
-        "projectPath": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj",
+        "projectPath": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\QuantityMeasurement.Domain.csproj",
         "packagesPath": "C:\\Users\\Anoop\\.nuget\\packages\\",
-        "outputPath": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\obj\\",
+        "outputPath": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Anoop\\AppData\\Roaming\\NuGet\\NuGet.Config"

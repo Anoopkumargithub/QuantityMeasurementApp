@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\QuantityMeasurement.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\QuantityMeasurement.Infrastructure.csproj",
       "projectName": "QuantityMeasurement.Infrastructure",
-      "projectPath": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\QuantityMeasurement.Infrastructure.csproj",
+      "projectPath": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\QuantityMeasurement.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\Anoop\\.nuget\\packages\\",
-      "outputPath": "C:\\QuantityMeasurementApp2\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\obj\\",
+      "outputPath": "C:\\Capegemini\\QuantityMeasurementApp\\QuantityMeasurementSolution\\QuantityMeasurement.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Anoop\\AppData\\Roaming\\NuGet\\NuGet.Config"
