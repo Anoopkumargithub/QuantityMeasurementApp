@@ -1,3 +1,4 @@
+using System;
 using QuantityMeasurement.Domain.Enums;
 using QuantityMeasurement.Domain.Services;
 
@@ -13,21 +14,135 @@ namespace QuantityMeasurement.Domain.ValueObjects
         public Quantity(double value, TUnit unit)
         {
             if (!double.IsFinite(value))
-                throw new ArgumentException("Value must be finite.");
+                throw new ArgumentException("Value must be finite.", nameof(value));
+
+            if (!Enum.IsDefined(typeof(TUnit), unit))
+                throw new ArgumentException("Invalid unit.", nameof(unit));
 
             Value = value;
             Unit = unit;
         }
 
+        public Quantity<TUnit> ConvertTo(TUnit targetUnit)
+        {
+            ValidateTargetUnit(targetUnit);
+
+            double baseValue = ToBaseUnit();
+            double converted = FromBaseUnit(baseValue, targetUnit);
+
+            return new Quantity<TUnit>(converted, targetUnit);
+        }
+
+        public Quantity<TUnit> Add(Quantity<TUnit> other)
+        {
+            return Add(other, Unit);
+        }
+
+        public Quantity<TUnit> Add(Quantity<TUnit> other, TUnit targetUnit)
+        {
+            ValidateArithmeticOperands(other, targetUnit, true);
+
+            double baseResult = PerformBaseArithmetic(other, ArithmeticOperation.Add);
+            double converted = FromBaseUnit(baseResult, targetUnit);
+
+            return new Quantity<TUnit>(RoundToTwoDecimals(converted), targetUnit);
+        }
+
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other)
+        {
+            return Subtract(other, Unit);
+        }
+
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other, TUnit targetUnit)
+        {
+            ValidateArithmeticOperands(other, targetUnit, true);
+
+            double baseResult = PerformBaseArithmetic(other, ArithmeticOperation.Subtract);
+            double converted = FromBaseUnit(baseResult, targetUnit);
+
+            return new Quantity<TUnit>(RoundToTwoDecimals(converted), targetUnit);
+        }
+
+        public double Divide(Quantity<TUnit> other)
+        {
+            ValidateArithmeticOperands(other, default, false);
+
+            return PerformBaseArithmetic(other, ArithmeticOperation.Divide);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Quantity<TUnit> other)
+                return false;
+
+            return Math.Abs(ToBaseUnit() - other.ToBaseUnit()) < Epsilon;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToBaseUnit().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Value} {Unit}";
+        }
+
+        private void ValidateArithmeticOperands(
+            Quantity<TUnit>? other,
+            TUnit targetUnit,
+            bool targetUnitRequired)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other), "Other quantity cannot be null.");
+
+            if (!double.IsFinite(Value))
+                throw new ArgumentException("Current quantity value must be finite.");
+
+            if (!double.IsFinite(other.Value))
+                throw new ArgumentException("Other quantity value must be finite.");
+
+            if (targetUnitRequired)
+                ValidateTargetUnit(targetUnit);
+        }
+
+        private void ValidateTargetUnit(TUnit targetUnit)
+        {
+            if (!Enum.IsDefined(typeof(TUnit), targetUnit))
+                throw new ArgumentException("Invalid target unit.", nameof(targetUnit));
+        }
+
+        private double PerformBaseArithmetic(
+            Quantity<TUnit> other,
+            ArithmeticOperation operation)
+        {
+            double thisBase = ToBaseUnit();
+            double otherBase = other.ToBaseUnit();
+
+            return operation switch
+            {
+                ArithmeticOperation.Add => thisBase + otherBase,
+                ArithmeticOperation.Subtract => thisBase - otherBase,
+                ArithmeticOperation.Divide => Math.Abs(otherBase) < Epsilon
+                    ? throw new ArithmeticException("Cannot divide by zero.")
+                    : thisBase / otherBase,
+                _ => throw new InvalidOperationException("Unsupported arithmetic operation.")
+            };
+        }
+
         private double ToBaseUnit()
         {
             if (typeof(TUnit) == typeof(LengthUnit))
+            {
                 return UnitConversionService.ConvertLengthToBase(
                     Value, (LengthUnit)(object)Unit);
+            }
 
             if (typeof(TUnit) == typeof(WeightUnit))
+            {
                 return UnitConversionService.ConvertWeightToBase(
                     Value, (WeightUnit)(object)Unit);
+            }
 
             if (typeof(TUnit) == typeof(VolumeUnit))
             {
@@ -38,7 +153,7 @@ namespace QuantityMeasurement.Domain.ValueObjects
                     VolumeUnit.Litre => Value,
                     VolumeUnit.Millilitre => Value * 0.001,
                     VolumeUnit.Gallon => Value * 3.78541,
-                    _ => throw new ArgumentException("Invalid VolumeUnit")
+                    _ => throw new ArgumentException("Invalid VolumeUnit.")
                 };
             }
 
@@ -57,7 +172,7 @@ namespace QuantityMeasurement.Domain.ValueObjects
                     LengthUnit.Inches => baseValue * 12.0,
                     LengthUnit.Yards => baseValue / 3.0,
                     LengthUnit.Centimeters => baseValue / 0.0328084,
-                    _ => throw new ArgumentException("Invalid LengthUnit")
+                    _ => throw new ArgumentException("Invalid LengthUnit.")
                 };
             }
 
@@ -71,7 +186,7 @@ namespace QuantityMeasurement.Domain.ValueObjects
                     WeightUnit.Kilogram => baseValue / 1000.0,
                     WeightUnit.Pound => baseValue / 453.592,
                     WeightUnit.Tonne => baseValue / 1_000_000.0,
-                    _ => throw new ArgumentException("Invalid WeightUnit")
+                    _ => throw new ArgumentException("Invalid WeightUnit.")
                 };
             }
 
@@ -84,95 +199,23 @@ namespace QuantityMeasurement.Domain.ValueObjects
                     VolumeUnit.Litre => baseValue,
                     VolumeUnit.Millilitre => baseValue / 0.001,
                     VolumeUnit.Gallon => baseValue / 3.78541,
-                    _ => throw new ArgumentException("Invalid VolumeUnit")
+                    _ => throw new ArgumentException("Invalid VolumeUnit.")
                 };
             }
 
             throw new InvalidOperationException("Unsupported unit type.");
         }
 
-        private static double Round2(double value)
+        private static double RoundToTwoDecimals(double value)
         {
             return Math.Round(value, 2, MidpointRounding.AwayFromZero);
         }
 
-        public Quantity<TUnit> Add(Quantity<TUnit> other)
+        private enum ArithmeticOperation
         {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
-            double baseSum = ToBaseUnit() + other.ToBaseUnit();
-            double result = FromBaseUnit(baseSum, Unit);
-
-            return new Quantity<TUnit>(result, Unit);
+            Add,
+            Subtract,
+            Divide
         }
-
-        public Quantity<TUnit> Add(Quantity<TUnit> other, TUnit targetUnit)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
-            double baseSum = ToBaseUnit() + other.ToBaseUnit();
-            double result = FromBaseUnit(baseSum, targetUnit);
-
-            return new Quantity<TUnit>(result, targetUnit);
-        }
-
-        public Quantity<TUnit> Subtract(Quantity<TUnit> other)
-            => Subtract(other, Unit);
-
-        public Quantity<TUnit> Subtract(Quantity<TUnit> other, TUnit targetUnit)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
-            if (!double.IsFinite(other.Value))
-                throw new ArgumentException("Other value must be finite.", nameof(other));
-
-            double diffBase = ToBaseUnit() - other.ToBaseUnit();
-            double converted = FromBaseUnit(diffBase, targetUnit);
-            double rounded = Round2(converted);
-
-            return new Quantity<TUnit>(rounded, targetUnit);
-        }
-
-        public double Divide(Quantity<TUnit> other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
-            if (!double.IsFinite(other.Value))
-                throw new ArgumentException("Other value must be finite.", nameof(other));
-
-            double denominatorBase = other.ToBaseUnit();
-
-            if (Math.Abs(denominatorBase) < Epsilon)
-                throw new DivideByZeroException("Cannot divide by a zero quantity.");
-
-            double numeratorBase = ToBaseUnit();
-            return numeratorBase / denominatorBase;
-        }
-
-        public Quantity<TUnit> ConvertTo(TUnit targetUnit)
-        {
-            double baseValue = ToBaseUnit();
-            double result = FromBaseUnit(baseValue, targetUnit);
-
-            return new Quantity<TUnit>(result, targetUnit);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is not Quantity<TUnit> other)
-                return false;
-
-            return Math.Abs(ToBaseUnit() - other.ToBaseUnit()) < Epsilon;
-        }
-
-        public override int GetHashCode()
-            => ToBaseUnit().GetHashCode();
-
-        public override string ToString()
-            => $"{Value} {Unit}";
     }
 }

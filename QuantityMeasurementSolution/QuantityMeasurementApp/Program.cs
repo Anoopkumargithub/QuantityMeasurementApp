@@ -445,7 +445,7 @@ namespace QuantityMeasurementApp
                 return null;
             }
 
-            if(typeof(TUnit) == typeof(LengthUnit))
+            if (typeof(TUnit) == typeof(LengthUnit))
             {
                 Console.Write("Enter unit (Feet/Inches/Yards/Centimeters): ");
             }
@@ -457,7 +457,8 @@ namespace QuantityMeasurementApp
             {
                 Console.Write("Enter unit (Litre/Millilitre/Gallon): ");
             }
-            else{
+            else
+            {
                 Console.WriteLine("Unsupported unit type.");
                 return null;
             }
