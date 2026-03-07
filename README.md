@@ -129,4 +129,13 @@ dotnet test
  - Validated scalability of Quantity<TUnit> generic design
  - Confirmed Open-Closed Principle compliance
  - Added volume unit test coverage
+- [x] UC12: Added Subtraction and Division Operations
+  - Implemented `Subtract()` with implicit target unit support
+  - Implemented `Subtract(other, targetUnit)` with explicit target unit support
+  - Implemented `Divide()` returning a dimensionless scalar result
+  - Added divide-by-zero protection and consistent validation
+  - Enabled subtraction and division across Length, Weight, and Volume
+  - Preserved immutability of original quantity objects
+  - Added MSTest coverage for arithmetic edge cases and non-commutative behavior
+
 ---
