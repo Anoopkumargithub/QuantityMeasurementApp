@@ -154,4 +154,16 @@ dotnet test
   - Preserved backward compatibility for Length, Weight, and Volume categories
   - Extended console application to support Temperature operations
   - Added MSTest coverage for temperature equality, conversion, and unsupported arithmetic handling
+- [x] UC15: Introduced N-Tier Architecture Refactoring for Quantity Measurement Application
+  - Introduced `QuantityMeasurementController` to handle application requests from the console layer
+  - Added `QuantityMeasurementService` implementing `IQuantityMeasurementService` to centralize business logic
+  - Introduced `IQuantityMeasurementRepository` abstraction for measurement history persistence
+  - Implemented `QuantityMeasurementCacheRepository` using in-memory cache with JSON file persistence
+  - Added domain data structures: `QuantityDto`, `QuantityModel<TUnit>`, and `QuantityMeasurementEntity`
+  - Introduced custom exception `QuantityMeasurementException` for domain-level error handling
+  - Refactored `Program.cs` to act as a thin entry point delegating operations to the controller
+  - Ensured strict separation of concerns across Controller, Service, Repository, DTO, Model, and Entity layers
+  - Preserved backward compatibility for UC1–UC14 domain logic and existing arithmetic behavior
+  - Maintained DRY and SOLID principles while preparing the system for future scalability
+  - Added MSTest coverage for service layer operations including comparison, conversion, arithmetic, and temperature restrictions
 ---
