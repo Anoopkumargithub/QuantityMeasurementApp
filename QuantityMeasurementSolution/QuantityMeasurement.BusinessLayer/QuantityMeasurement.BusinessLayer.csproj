@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Core.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Models.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Entities.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Repository.Abstractions.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Infrastructure\QuantityMeasurement.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

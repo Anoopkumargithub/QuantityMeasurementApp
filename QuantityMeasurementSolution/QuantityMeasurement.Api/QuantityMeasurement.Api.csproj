@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Domain.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.BusinessLayer.csproj" />
+    <ProjectReference Include="..\QuantityMeasurement.Domain\QuantityMeasurement.Models.csproj" />
     <ProjectReference Include="..\QuantityMeasurement.Infrastructure\QuantityMeasurement.Infrastructure.csproj" />
   </ItemGroup>
 
