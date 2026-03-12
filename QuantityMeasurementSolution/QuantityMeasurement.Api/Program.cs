@@ -1,6 +1,9 @@
-using QuantityMeasurement.Domain.Interfaces;
+using BusinessLayer.Interfaces;
+using BusinessLayer.Services;
+using RepositoryLayer.Interfaces;
+using RepositoryLayer.Repositories;
 using QuantityMeasurement.Domain.Services;
-using QuantityMeasurement.Infrastructure.Repositories;
+// using QuantityMeasurement.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

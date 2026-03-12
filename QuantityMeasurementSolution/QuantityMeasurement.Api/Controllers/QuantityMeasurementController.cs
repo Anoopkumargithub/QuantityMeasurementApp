@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using QuantityMeasurement.Api.Contracts;
-using QuantityMeasurement.Domain.DTOs;
+using ModelLayer.DTOs;
+using BusinessLayer.Interfaces;
 using QuantityMeasurement.Domain.Exceptions;
-using QuantityMeasurement.Domain.Interfaces;
 
 namespace QuantityMeasurement.Api.Controllers
 {

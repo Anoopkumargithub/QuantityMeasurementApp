@@ -1,5 +1,5 @@
 using System;
-using QuantityMeasurement.Domain.Interfaces;
+// using QuantityMeasurement.Domain.Interfaces;
 
 namespace QuantityMeasurement.Domain.Enums
 {
