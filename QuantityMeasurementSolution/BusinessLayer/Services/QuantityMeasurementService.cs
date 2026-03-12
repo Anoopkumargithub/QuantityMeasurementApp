@@ -316,16 +316,23 @@ namespace BusinessLayer.Services
             QuantityDto? second,
             Exception ex)
         {
-            _repository.Save(new QuantityMeasurementEntity(
-                operation: operation,
-                firstValue: first.Value,
-                firstUnit: first.Unit,
-                firstMeasurementType: first.MeasurementType,
-                secondValue: second?.Value,
-                secondUnit: second?.Unit,
-                secondMeasurementType: second?.MeasurementType,
-                isSuccess: false,
-                errorMessage: ex.Message));
+            // Attempt to store the failure details in the repository, but do not let any exceptions from this process propagate
+            try
+            {
+                _repository.Save(new QuantityMeasurementEntity(
+                    operation: operation,
+                    firstValue: first.Value,
+                    firstUnit: first.Unit,
+                    firstMeasurementType: first.MeasurementType,
+                    secondValue: second?.Value,
+                    secondUnit: second?.Unit,
+                    secondMeasurementType: second?.MeasurementType,
+                    isSuccess: false,
+                    errorMessage: ex.Message));
+            }
+            catch
+            {
+            }
 
             return ex as QuantityMeasurementException
                    ?? new QuantityMeasurementException($"{operation} operation failed: {ex.Message}", ex);

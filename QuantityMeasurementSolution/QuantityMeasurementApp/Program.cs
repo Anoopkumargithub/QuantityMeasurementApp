@@ -1,12 +1,13 @@
 ﻿using System;
 using ModelLayer.DTOs;
-using QuantityMeasurement.Domain.Enums;
 using BusinessLayer.Interfaces;
 using RepositoryLayer.Interfaces;
 using BusinessLayer.Services;
 using RepositoryLayer.Repositories;
 using QuantityMeasurement.Domain.Services;
 using QuantityMeasurementApp.Controllers;
+using QuantityMeasurementApp.Configuration;
+using RepositoryLayer.Configuration;
 
 namespace QuantityMeasurementApp
 {
@@ -14,11 +15,43 @@ namespace QuantityMeasurementApp
     {
         private static void Main()
         {
-            IQuantityMeasurementRepository repository = QuantityMeasurementCacheRepository.Instance;
+            var appConfig = new ApplicationConfig(
+                useDatabaseRepository: true,
+                connectionString: "Server=localhost,1433;Database=QuantityMeasurementDb;User Id=sa;Password=Admin@123;TrustServerCertificate=True;"
+            );
+
+            IQuantityMeasurementRepository repository = CreateRepository(appConfig);
             IQuantityMeasurementService service = new QuantityMeasurementService(repository);
             var controller = new QuantityMeasurementController(service);
 
-            Console.WriteLine("=== Quantity Measurement Application (UC15) ===\n");
+            Console.WriteLine("=== Quantity Measurement Application (UC16) ===");
+            Console.WriteLine($"Repository: {repository.GetRepositoryInfo()}");
+            Console.WriteLine($"Pool Info: {repository.GetPoolStatistics()}");
+            Console.WriteLine();
+
+            try
+            {
+                RunApplication(controller);
+            }
+            finally
+            {
+                repository.ReleaseResources();
+            }
+        }
+
+        private static IQuantityMeasurementRepository CreateRepository(ApplicationConfig appConfig)
+        {
+            if (appConfig.UseDatabaseRepository)
+            {
+                return new QuantityMeasurementDatabaseRepository(
+                    new DatabaseConfig(appConfig.ConnectionString));
+            }
+
+            return new QuantityMeasurementCacheRepository();
+        }
+
+        private static void RunApplication(QuantityMeasurementController controller)
+        {
             Console.WriteLine("1. Length Operations");
             Console.WriteLine("2. Weight Operations");
             Console.WriteLine("3. Volume Operations");
@@ -365,10 +398,10 @@ namespace QuantityMeasurementApp
         {
             return measurementType.ToLowerInvariant() switch
             {
-                "length" => string.Join("/", Enum.GetNames<LengthUnit>()),
-                "weight" => string.Join("/", Enum.GetNames<WeightUnit>()),
-                "volume" => string.Join("/", Enum.GetNames<VolumeUnit>()),
-                "temperature" => string.Join("/", Enum.GetNames<TemperatureUnit>()),
+                "length" => "Feet/Inches/Yards/Centimeters",
+                "weight" => "Gram/Kilogram/Pound/Tonne",
+                "volume" => "Litre/Millilitre/Gallon",
+                "temperature" => "Celsius/Fahrenheit/Kelvin",
                 _ => "Unsupported"
             };
         }
