@@ -8,7 +8,7 @@ The codebase started with the UC1 feet-equality requirement and has grown into a
 - Multiple categories: length, weight, volume, and temperature
 - Console and ASP.NET Core API entry points
 - MSTest coverage for domain and service behavior
-- Optional persistence through an in-memory repository or SQL Server via ADO.NET
+- Optional persistence through an in-memory repository, SQL Server via ADO.NET (console), and SQL Server via EF Core ORM (API)
 
 ## What The Application Supports
 
@@ -48,11 +48,11 @@ QuantityMeasurementSolution/
 
 ## Runtime Behavior
 
-- Console app: configured to use the SQL Server repository by default
-- Web API: currently configured to use the in-memory cache repository
+- Console app: configured to use the SQL Server ADO.NET repository by default
+- Web API: configured to use the SQL Server EF Core ORM repository by default
 - Repository abstraction: supports saving measurements, querying history, counting records, clearing records, and releasing resources
 
-This means the console app requires a working SQL Server database unless you change its startup configuration.
+This means the console app and API require a working SQL Server database unless you change their startup configuration.
 
 ## Prerequisites
 
@@ -65,9 +65,9 @@ The console app currently uses this local SQL Server target:
 Server=localhost,1433;Database=QuantityMeasurementDb;User Id=sa;Password=Admin@123;TrustServerCertificate=True;
 ```
 
-If your SQL Server runs elsewhere, update the connection string in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs` before running the console application.
+If your SQL Server runs elsewhere, update the connection string in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs` and `QuantityMeasurementSolution/QuantityMeasurement.Api/appsettings.json` before running.
 
-If you do not want to use SQL Server, set `useDatabaseRepository: false` in the `ApplicationConfig` created in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs`.
+If you do not want to use SQL Server in console, set `useDatabaseRepository: false` in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs`.
 
 ## Quick Start
 
@@ -113,17 +113,18 @@ The script creates:
 
 - `dbo.QuantityMeasurements` for stored operation results
 - `dbo.QuantityMeasurementHistory` for audit-style insert tracking
+- `dbo.trg_QuantityMeasurements_InsertHistory` trigger to auto-write history rows after inserts
 - supporting indexes for operation, measurement type, and creation time queries
 
 ## API Surface
 
 The Web API exposes these endpoints under `/api/QuantityMeasurement`:
 
-- `POST /compare`
-- `POST /convert`
-- `POST /add`
-- `POST /subtract`
-- `POST /divide`
+- `POST /api/QuantityMeasurement/compare`
+- `POST /api/QuantityMeasurement/convert`
+- `POST /api/QuantityMeasurement/add`
+- `POST /api/QuantityMeasurement/subtract`
+- `POST /api/QuantityMeasurement/divide`
 
 Requests use transport contracts in `QuantityMeasurement.Api/Contracts`, and responses are wrapped in a standard `ApiResponse<T>` payload.
 
@@ -145,6 +146,7 @@ Requests use transport contracts in `QuantityMeasurement.Api/Contracts`, and res
 - [x] UC14: Added temperature with selective arithmetic restrictions
 - [x] UC15: Added Web API support
 - [x] UC16: Added SQL Server persistence through ADO.NET
+- [x] UC17: Added ASP.NET REST integration with SQL Server EF Core ORM persistence
 
 ## Testing Focus
 
