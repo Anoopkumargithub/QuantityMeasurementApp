@@ -48,18 +48,6 @@ VALUES
 
 SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
 
-            const string insertHistorySql = @"
-INSERT INTO dbo.QuantityMeasurementHistory
-(
-    MeasurementId,
-    ActionType
-)
-VALUES
-(
-    @MeasurementId,
-    @ActionType
-);";
-
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -69,19 +57,10 @@ VALUES
 
                 try
                 {
-                    long measurementId;
-
                     using (var command = new SqlCommand(insertMeasurementSql, connection, transaction))
                     {
                         AddSaveParameters(command, entity);
-                        measurementId = Convert.ToInt64(command.ExecuteScalar());
-                    }
-
-                    using (var historyCommand = new SqlCommand(insertHistorySql, connection, transaction))
-                    {
-                        historyCommand.Parameters.AddWithValue("@MeasurementId", measurementId);
-                        historyCommand.Parameters.AddWithValue("@ActionType", "INSERT");
-                        historyCommand.ExecuteNonQuery();
+                        _ = command.ExecuteScalar();
                     }
 
                     transaction.Commit();
