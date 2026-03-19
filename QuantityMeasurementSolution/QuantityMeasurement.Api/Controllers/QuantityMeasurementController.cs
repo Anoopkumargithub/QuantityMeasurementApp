@@ -154,6 +154,17 @@ namespace QuantityMeasurement.Api.Controllers
             }
         }
 
+        [HttpGet("health")]
+        public ActionResult<ApiResponse<string>> Health()
+        {
+            return Ok(new ApiResponse<string>
+            {
+                Success = true,
+                Message = "Service is healthy.",
+                Data = "OK"
+            });
+        }
+
         private static QuantityDto MapToDto(QuantityRequest request)
         {
             return new QuantityDto(
