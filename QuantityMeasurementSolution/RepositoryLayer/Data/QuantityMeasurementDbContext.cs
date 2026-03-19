@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using QuantityMeasurement.Infrastructure.Data.Entities;
+using QuantityMeasurement.ModelLayer.Entities;
 
-namespace QuantityMeasurement.Infrastructure.Data
+namespace QuantityMeasurement.RepositoryLayer.Data
 {
     /// <summary>
     /// EF Core DbContext that maps quantity measurement and history tables.

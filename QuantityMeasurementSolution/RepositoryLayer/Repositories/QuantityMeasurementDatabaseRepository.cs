@@ -29,24 +29,24 @@ namespace RepositoryLayer.Repositories
                 throw new ArgumentNullException(nameof(entity));
 
             const string insertMeasurementSql = @"
-INSERT INTO dbo.QuantityMeasurements
-(
-    Operation,
-    FirstValue, FirstUnit, FirstMeasurementType,
-    SecondValue, SecondUnit, SecondMeasurementType,
-    ResultValue, ResultUnit, ResultMeasurementType,
-    ResultText, IsSuccess, ErrorMessage
-)
-VALUES
-(
-    @Operation,
-    @FirstValue, @FirstUnit, @FirstMeasurementType,
-    @SecondValue, @SecondUnit, @SecondMeasurementType,
-    @ResultValue, @ResultUnit, @ResultMeasurementType,
-    @ResultText, @IsSuccess, @ErrorMessage
-);
+                INSERT INTO dbo.QuantityMeasurements
+                (
+                    Operation,
+                    FirstValue, FirstUnit, FirstMeasurementType,
+                    SecondValue, SecondUnit, SecondMeasurementType,
+                    ResultValue, ResultUnit, ResultMeasurementType,
+                    ResultText, IsSuccess, ErrorMessage
+                )
+                VALUES
+                (
+                    @Operation,
+                    @FirstValue, @FirstUnit, @FirstMeasurementType,
+                    @SecondValue, @SecondUnit, @SecondMeasurementType,
+                    @ResultValue, @ResultUnit, @ResultMeasurementType,
+                    @ResultText, @IsSuccess, @ErrorMessage
+                );
 
-SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
+                SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
 
             try
             {
@@ -84,14 +84,14 @@ SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
         public IReadOnlyList<QuantityMeasurementEntity> GetAllMeasurements()
         {
             const string sql = @"
-SELECT
-    Operation,
-    FirstValue, FirstUnit, FirstMeasurementType,
-    SecondValue, SecondUnit, SecondMeasurementType,
-    ResultValue, ResultUnit, ResultMeasurementType,
-    ResultText, IsSuccess, ErrorMessage
-FROM dbo.QuantityMeasurements
-ORDER BY CreatedAtUtc DESC;";
+                SELECT
+                    Operation,
+                    FirstValue, FirstUnit, FirstMeasurementType,
+                    SecondValue, SecondUnit, SecondMeasurementType,
+                    ResultValue, ResultUnit, ResultMeasurementType,
+                    ResultText, IsSuccess, ErrorMessage
+                FROM dbo.QuantityMeasurements
+                ORDER BY CreatedAtUtc DESC;";
 
             return ExecuteReaderList(sql, null);
         }
@@ -99,15 +99,15 @@ ORDER BY CreatedAtUtc DESC;";
         public IReadOnlyList<QuantityMeasurementEntity> GetMeasurementsByOperation(string operation)
         {
             const string sql = @"
-SELECT
-    Operation,
-    FirstValue, FirstUnit, FirstMeasurementType,
-    SecondValue, SecondUnit, SecondMeasurementType,
-    ResultValue, ResultUnit, ResultMeasurementType,
-    ResultText, IsSuccess, ErrorMessage
-FROM dbo.QuantityMeasurements
-WHERE Operation = @Operation
-ORDER BY CreatedAtUtc DESC;";
+                SELECT
+                    Operation,
+                    FirstValue, FirstUnit, FirstMeasurementType,
+                    SecondValue, SecondUnit, SecondMeasurementType,
+                    ResultValue, ResultUnit, ResultMeasurementType,
+                    ResultText, IsSuccess, ErrorMessage
+                FROM dbo.QuantityMeasurements
+                WHERE Operation = @Operation
+                ORDER BY CreatedAtUtc DESC;";
 
             return ExecuteReaderList(sql, cmd =>
             {
@@ -118,15 +118,15 @@ ORDER BY CreatedAtUtc DESC;";
         public IReadOnlyList<QuantityMeasurementEntity> GetMeasurementsByMeasurementType(string measurementType)
         {
             const string sql = @"
-SELECT
-    Operation,
-    FirstValue, FirstUnit, FirstMeasurementType,
-    SecondValue, SecondUnit, SecondMeasurementType,
-    ResultValue, ResultUnit, ResultMeasurementType,
-    ResultText, IsSuccess, ErrorMessage
-FROM dbo.QuantityMeasurements
-WHERE FirstMeasurementType = @MeasurementType
-ORDER BY CreatedAtUtc DESC;";
+                SELECT
+                    Operation,
+                    FirstValue, FirstUnit, FirstMeasurementType,
+                    SecondValue, SecondUnit, SecondMeasurementType,
+                    ResultValue, ResultUnit, ResultMeasurementType,
+                    ResultText, IsSuccess, ErrorMessage
+                FROM dbo.QuantityMeasurements
+                WHERE FirstMeasurementType = @MeasurementType
+                ORDER BY CreatedAtUtc DESC;";
 
             return ExecuteReaderList(sql, cmd =>
             {

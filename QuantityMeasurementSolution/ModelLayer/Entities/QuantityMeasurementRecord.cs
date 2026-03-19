@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace QuantityMeasurement.Infrastructure.Data.Entities
+namespace QuantityMeasurement.ModelLayer.Entities
 {
     /// <summary>
     /// ORM record mapped to dbo.QuantityMeasurements for persisted quantity operations.

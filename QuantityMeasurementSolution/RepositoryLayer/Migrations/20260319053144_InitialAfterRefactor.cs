@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace QuantityMeasurement.Infrastructure.Data.Migrations
+namespace RepositoryLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialOrm : Migration
+    public partial class InitialAfterRefactor : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

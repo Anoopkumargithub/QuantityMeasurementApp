@@ -1,6 +1,6 @@
 using System;
 
-namespace QuantityMeasurement.Infrastructure.Data.Entities
+namespace QuantityMeasurement.ModelLayer.Entities
 {
     /// <summary>
     /// ORM record mapped to dbo.QuantityMeasurementHistory for audit entries.

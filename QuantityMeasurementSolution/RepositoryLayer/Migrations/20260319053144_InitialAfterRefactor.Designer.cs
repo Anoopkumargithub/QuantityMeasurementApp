@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using QuantityMeasurement.Infrastructure.Data;
+using QuantityMeasurement.RepositoryLayer.Data;
 
 #nullable disable
 
-namespace QuantityMeasurement.Infrastructure.Data.Migrations
+namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(QuantityMeasurementDbContext))]
-    partial class QuantityMeasurementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319053144_InitialAfterRefactor")]
+    partial class InitialAfterRefactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace QuantityMeasurement.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("QuantityMeasurement.Infrastructure.Data.Entities.QuantityMeasurementHistoryRecord", b =>
+            modelBuilder.Entity("QuantityMeasurement.ModelLayer.Entities.QuantityMeasurementHistoryRecord", b =>
                 {
                     b.Property<long>("HistoryId")
                         .ValueGeneratedOnAdd()
@@ -50,7 +53,7 @@ namespace QuantityMeasurement.Infrastructure.Data.Migrations
                     b.ToTable("QuantityMeasurementHistory", "dbo");
                 });
 
-            modelBuilder.Entity("QuantityMeasurement.Infrastructure.Data.Entities.QuantityMeasurementRecord", b =>
+            modelBuilder.Entity("QuantityMeasurement.ModelLayer.Entities.QuantityMeasurementRecord", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,9 +122,9 @@ namespace QuantityMeasurement.Infrastructure.Data.Migrations
                     b.ToTable("QuantityMeasurements", "dbo");
                 });
 
-            modelBuilder.Entity("QuantityMeasurement.Infrastructure.Data.Entities.QuantityMeasurementHistoryRecord", b =>
+            modelBuilder.Entity("QuantityMeasurement.ModelLayer.Entities.QuantityMeasurementHistoryRecord", b =>
                 {
-                    b.HasOne("QuantityMeasurement.Infrastructure.Data.Entities.QuantityMeasurementRecord", "Measurement")
+                    b.HasOne("QuantityMeasurement.ModelLayer.Entities.QuantityMeasurementRecord", "Measurement")
                         .WithMany("HistoryRecords")
                         .HasForeignKey("MeasurementId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -130,7 +133,7 @@ namespace QuantityMeasurement.Infrastructure.Data.Migrations
                     b.Navigation("Measurement");
                 });
 
-            modelBuilder.Entity("QuantityMeasurement.Infrastructure.Data.Entities.QuantityMeasurementRecord", b =>
+            modelBuilder.Entity("QuantityMeasurement.ModelLayer.Entities.QuantityMeasurementRecord", b =>
                 {
                     b.Navigation("HistoryRecords");
                 });

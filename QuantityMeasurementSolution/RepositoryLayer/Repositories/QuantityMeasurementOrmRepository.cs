@@ -4,11 +4,11 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ModelLayer.Entities;
 using QuantityMeasurement.Domain.Exceptions;
-using QuantityMeasurement.Infrastructure.Data;
-using QuantityMeasurement.Infrastructure.Data.Entities;
+using QuantityMeasurement.RepositoryLayer.Data;
+using QuantityMeasurement.ModelLayer.Entities;
 using RepositoryLayer.Interfaces;
 
-namespace QuantityMeasurement.Infrastructure.Repositories
+namespace QuantityMeasurement.RepositoryLayer.Repositories
 {
     /// <summary>
     /// EF Core implementation of quantity measurement persistence operations.

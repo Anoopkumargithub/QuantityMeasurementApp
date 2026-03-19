@@ -53,7 +53,7 @@ namespace BusinessLayer.Services
                 throw CreateAndStoreFailure("COMPARE", firstQuantity, secondQuantity, ex);
             }
         }
-
+            
         public QuantityDto Convert(QuantityDto sourceQuantity, string targetUnit)
         {
             try
