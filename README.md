@@ -7,6 +7,7 @@ The codebase started with the UC1 feet-equality requirement and has grown into a
 - Generic quantity modeling through `Quantity<TUnit>`
 - Multiple categories: length, weight, volume, and temperature
 - Console and ASP.NET Core API entry points
+- Google/Firebase-based authentication for secured API access
 - MSTest coverage for domain and service behavior
 - Optional persistence through an in-memory repository, SQL Server via ADO.NET (console), and SQL Server via EF Core ORM (API)
 
@@ -36,7 +37,6 @@ The repository currently contains both the active solution projects and supporti
 QuantityMeasurementSolution/
 |- QuantityMeasurementSolution.slnx
 |- QuantityMeasurement.Domain/            Domain units, value objects, exceptions, services
-|- QuantityMeasurement.Infrastructure/    Infrastructure project referenced by the API
 |- QuantityMeasurement.Tests/             MSTest test suite
 |- QuantityMeasurementApp/                Console application
 |- QuantityMeasurement.Api/               ASP.NET Core Web API
@@ -54,10 +54,13 @@ QuantityMeasurementSolution/
 
 This means the console app and API require a working SQL Server database unless you change their startup configuration.
 
+The API also requires Firebase configuration and a valid Firebase-issued JWT for protected endpoints.
+
 ## Prerequisites
 
 - .NET 10 SDK
 - SQL Server instance if you want to run the console app with the default configuration
+- Firebase project for Google Authentication (for API token validation)
 
 The console app currently uses this local SQL Server target:
 
@@ -66,6 +69,19 @@ Server=localhost,1433;Database=QuantityMeasurementDb;User Id=sa;Password=Admin@1
 ```
 
 If your SQL Server runs elsewhere, update the connection string in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs` and `QuantityMeasurementSolution/QuantityMeasurement.Api/appsettings.json` before running.
+
+For API authentication, configure the Firebase project id in:
+
+- `QuantityMeasurementSolution/QuantityMeasurement.Api/appsettings.json`
+- `QuantityMeasurementSolution/QuantityMeasurement.Api/appsettings.Development.json`
+
+Current key:
+
+```json
+"Firebase": {
+	"ProjectId": "your-firebase-project-id"
+}
+```
 
 If you do not want to use SQL Server in console, set `useDatabaseRepository: false` in `QuantityMeasurementSolution/QuantityMeasurementApp/Program.cs`.
 
@@ -92,6 +108,12 @@ dotnet run --project QuantityMeasurementSolution/QuantityMeasurement.Api/Quantit
 ```
 
 Swagger is enabled by default. After the API starts, open the reported `/swagger` URL.
+
+All quantity API endpoints are protected and require a bearer token from Firebase Authentication:
+
+```http
+Authorization: Bearer <firebase-id-token>
+```
 
 ### Run The Console App
 
@@ -125,8 +147,32 @@ The Web API exposes these endpoints under `/api/QuantityMeasurement`:
 - `POST /api/QuantityMeasurement/add`
 - `POST /api/QuantityMeasurement/subtract`
 - `POST /api/QuantityMeasurement/divide`
+- `GET /api/QuantityMeasurement/health`
+
+Authentication and authorization behavior:
+
+- JWT bearer authentication is configured against Firebase (`https://securetoken.google.com/{projectId}`)
+- API applies a global authenticated-user fallback policy
+- `QuantityMeasurementController` is marked with `[Authorize]`
+- Requests without a valid Firebase token are rejected
 
 Requests use transport contracts in `QuantityMeasurement.Api/Contracts`, and responses are wrapped in a standard `ApiResponse<T>` payload.
+
+## UC18: Google Authentication and User Management
+
+UC18 is implemented in the API by integrating Firebase token validation and enforcing authenticated access.
+
+What is implemented:
+
+- Google/Firebase token-based authentication via `Microsoft.AspNetCore.Authentication.JwtBearer`
+- Firebase settings binding through `FirebaseOptions` (`Firebase:ProjectId` is required at startup)
+- Authorization enforcement through global fallback policy and controller-level `[Authorize]`
+
+User management model in this solution:
+
+- User identity lifecycle (Google sign-in, account/profile management) is expected to be handled by Firebase Authentication / Google Identity
+- The Quantity Measurement API validates incoming Firebase tokens and serves only authenticated users
+- No separate local login/register/user CRUD endpoints are currently exposed in this API project
 
 ## Use Case Coverage
 
@@ -147,6 +193,7 @@ Requests use transport contracts in `QuantityMeasurement.Api/Contracts`, and res
 - [x] UC15: Added Web API support
 - [x] UC16: Added SQL Server persistence through ADO.NET
 - [x] UC17: Added ASP.NET REST integration with SQL Server EF Core ORM persistence
+- [x] UC18: Added Google Authentication-based API security and authenticated user access management via Firebase
 
 ## Testing Focus
 
@@ -158,3 +205,5 @@ The test suite covers:
 - Division and divide-by-zero behavior
 - Temperature conversion and unsupported operations
 - Service-layer orchestration behavior
+
+Authentication and authorization are configured in the API startup pipeline and should be validated with integration/API tests using valid and invalid Firebase JWTs.
