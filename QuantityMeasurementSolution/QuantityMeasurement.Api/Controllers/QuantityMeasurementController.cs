@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using QuantityMeasurement.Api.Contracts;
 using ModelLayer.DTOs;
 using BusinessLayer.Interfaces;
@@ -8,6 +9,7 @@ namespace QuantityMeasurement.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public sealed class QuantityMeasurementController : ControllerBase
     {
         private readonly IQuantityMeasurementService _quantityMeasurementService;
