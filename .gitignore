@@ -1,14 +1,14 @@
 ### VS Code ###
-. vscode/
+.vscode/
 
 # Compiled class file
-*. class
-*. jar
-*. log
+*.class
+*.jar
+*.log
 
 # Other File Exclusions
 .DS_Store
-*. iml
+*.iml
 
 # Build Folders Exclusion
 .idea/
@@ -18,3 +18,20 @@ out/
 build/
 dist/
 obj/
+
+# .NET specific
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# Environment files
+appsettings.Development.json
+appsettings.Production.json
+.env
+.env.local
+.env.*.local
+
+# Docker
+Dockerfile
+.dockerignore
