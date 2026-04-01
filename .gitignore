@@ -26,6 +26,7 @@ obj/
 *.sln.docstates
 
 # Environment files
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 .env
