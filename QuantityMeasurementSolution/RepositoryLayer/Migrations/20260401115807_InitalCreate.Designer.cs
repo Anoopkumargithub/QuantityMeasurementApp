@@ -12,8 +12,8 @@ using QuantityMeasurement.RepositoryLayer.Data;
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(QuantityMeasurementDbContext))]
-    [Migration("20260319053144_InitialAfterRefactor")]
-    partial class InitialAfterRefactor
+    [Migration("20260401115807_InitalCreate")]
+    partial class InitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
