@@ -42,7 +42,7 @@ Test it: Open `http://localhost:8080/swagger/index.html`
 | Setting | Value |
 |---------|-------|
 | **Name** | quantity-api |
-| **Root Directory** | `QuantityMeasurementApp/QuantityMeasurementSolution` |
+| **Root Directory** | `QuantityMeasurementSolution` |
 | **Runtime** | Docker |
 | **Build Command** | (leave blank) |
 | **Start Command** | (leave blank) |
