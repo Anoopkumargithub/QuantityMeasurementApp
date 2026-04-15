@@ -9,7 +9,6 @@ namespace QuantityMeasurement.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public sealed class QuantityMeasurementController : ControllerBase
     {
         private readonly IQuantityMeasurementService _quantityMeasurementService;

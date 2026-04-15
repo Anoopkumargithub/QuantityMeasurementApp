@@ -76,9 +76,7 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
+    // Keep authorization services registered; require auth only on endpoints marked with [Authorize].
 });
 
 builder.Services.AddScoped<IQuantityMeasurementRepository, QuantityMeasurementOrmRepository>();
