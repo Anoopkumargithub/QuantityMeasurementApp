@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using QuantityMeasurement.Api.Contracts;
 using ModelLayer.DTOs;
 using BusinessLayer.Interfaces;
@@ -19,6 +18,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpPost("compare")]
+        [HttpPost("/compare")]
         public ActionResult<ApiResponse<bool>> Compare([FromBody] CompareRequest request)
         {
             try
@@ -46,6 +46,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpPost("convert")]
+        [HttpPost("/convert")]
         public ActionResult<ApiResponse<QuantityDto>> Convert([FromBody] ConvertRequest request)
         {
             try
@@ -73,6 +74,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpPost("add")]
+        [HttpPost("/add")]
         public ActionResult<ApiResponse<QuantityDto>> Add([FromBody] ArithmeticRequest request)
         {
             try
@@ -101,6 +103,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpPost("subtract")]
+        [HttpPost("/subtract")]
         public ActionResult<ApiResponse<QuantityDto>> Subtract([FromBody] ArithmeticRequest request)
         {
             try
@@ -129,6 +132,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpPost("divide")]
+        [HttpPost("/divide")]
         public ActionResult<ApiResponse<double>> Divide([FromBody] ArithmeticRequest request)
         {
             try
@@ -156,6 +160,7 @@ namespace QuantityMeasurement.Api.Controllers
         }
 
         [HttpGet("health")]
+        [HttpGet("/health")]
         public ActionResult<ApiResponse<string>> Health()
         {
             return Ok(new ApiResponse<string>
