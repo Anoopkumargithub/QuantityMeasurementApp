@@ -3,4 +3,10 @@
   <Project Path="QuantityMeasurement.Tests/QuantityMeasurement.Tests.csproj" />
   <Project Path="QuantityMeasurementApp/QuantityMeasurementApp.csproj" />
   <Project Path="QuantityMeasurement.Api/QuantityMeasurement.Api.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.ServiceRegistry/QuantityMeasurement.ServiceRegistry.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.OperationService/QuantityMeasurement.OperationService.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.AggregatorService/QuantityMeasurement.AggregatorService.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.ApiGateway/QuantityMeasurement.ApiGateway.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.AuthService/QuantityMeasurement.AuthService.csproj" />
+  <Project Path="QuantityMeasurement.Microservices/QuantityMeasurement.QmaService/QuantityMeasurement.QmaService.csproj" />
 </Solution>

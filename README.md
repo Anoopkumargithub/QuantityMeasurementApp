@@ -52,6 +52,13 @@ QuantityMeasurementSolution/
 - Web API: configured to use the SQL Server EF Core ORM repository by default
 - Repository abstraction: supports saving measurements, querying history, counting records, clearing records, and releasing resources
 
+Microservices option (new):
+
+- `QuantityMeasurement.Microservices/QuantityMeasurement.ApiGateway`: API gateway
+- `QuantityMeasurement.Microservices/QuantityMeasurement.AuthService`: auth service for JWT issuance/validation
+- `QuantityMeasurement.Microservices/QuantityMeasurement.QmaService`: QMA operations + history
+- `QuantityMeasurement.Microservices/docker-compose.yml`: Redis cache layer
+
 This means the console app and API require a working SQL Server database unless you change their startup configuration.
 
 The API also requires Firebase configuration and a valid Firebase-issued JWT for protected endpoints.
@@ -106,6 +113,19 @@ dotnet test QuantityMeasurementSolution/QuantityMeasurement.Tests/QuantityMeasur
 ```bash
 dotnet run --project QuantityMeasurementSolution/QuantityMeasurement.Api/QuantityMeasurement.Api.csproj
 ```
+
+### Run The Microservices Stack
+
+In separate terminals:
+
+```bash
+docker compose -f QuantityMeasurementSolution/QuantityMeasurement.Microservices/docker-compose.yml up -d
+dotnet run --project QuantityMeasurementSolution/QuantityMeasurement.Microservices/QuantityMeasurement.AuthService/QuantityMeasurement.AuthService.csproj
+dotnet run --project QuantityMeasurementSolution/QuantityMeasurement.Microservices/QuantityMeasurement.QmaService/QuantityMeasurement.QmaService.csproj
+dotnet run --project QuantityMeasurementSolution/QuantityMeasurement.Microservices/QuantityMeasurement.ApiGateway/QuantityMeasurement.ApiGateway.csproj
+```
+
+Gateway endpoint base URLs: `http://localhost:7003/auth` and `http://localhost:7003/api/qma`
 
 Swagger is enabled by default. After the API starts, open the reported `/swagger` URL.
 
