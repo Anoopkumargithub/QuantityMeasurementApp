@@ -16,12 +16,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var corsOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
+if (corsOrigins is null || corsOrigins.Length == 0 || Array.Exists(corsOrigins, string.IsNullOrWhiteSpace))
+{
+    throw new InvalidOperationException("CORS origins are missing. Configure 'Cors:AllowedOrigins' with at least one valid origin.");
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .AllowAnyOrigin("https://quantitymeasurementapp-frontend-p7zk.onrender.com")
+            .WithOrigins(corsOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
