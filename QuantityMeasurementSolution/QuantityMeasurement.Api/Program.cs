@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .AllowAnyOrigin("https://quantitymeasurementapp-frontend-p7zk.onrender.com")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
